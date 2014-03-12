@@ -1,3 +1,7 @@
+# Creates an Ambari Server base on vanilla centos
+#
+# docker build -t seq/ambari .
+
 FROM tianon/centos
 MAINTAINER lalyos
 
