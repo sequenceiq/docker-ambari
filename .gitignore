@@ -1,1 +1,3 @@
 *.swp
+ambari-*.log
+ambari-*.out
