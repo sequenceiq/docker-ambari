@@ -1,6 +1,6 @@
 # Creates an Ambari Server base on vanilla centos
 #
-# docker build -t seq/ambari ambari-base 
+# docker build -t seq/ambari ambari-base
 
 FROM tianon/centos
 MAINTAINER lalyos
@@ -21,9 +21,9 @@ RUN echo 'nameserver 8.8.4.4' >> /etc/resolv.dnsmasq.conf
 # google dns
 RUN echo 'nameserver 8.8.8.8' >> /etc/resolv.dnsmasq.conf
 RUN echo 'nameserver 8.8.4.4' >> /etc/resolv.dnsmasq.conf
-   
 
-RUN yum install -y sudo openssh-server openssh-clients unzip curl
+
+RUN yum install -y sudo openssh-server openssh-clients unzip curl ntp
 
 RUN ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key
 RUN ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key
@@ -38,4 +38,3 @@ RUN unzip /tmp/serf.zip -d /bin
 
 ADD serf-events.sh /etc/serf-events.sh
 RUN chmod +x /etc/serf-events.sh
-

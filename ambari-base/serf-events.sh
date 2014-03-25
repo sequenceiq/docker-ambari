@@ -21,5 +21,5 @@ drun() {
 
 serf agent -rpc-addr=$(hostname -i):7373 -bind=$(hostname -i) -event-handler=/etc/serf-events.sh -node=$(hostname -f)
 
-serf agent -rpc-addr=$(hostname -i):7373 -bind=$(hostname -i) -event-handler=/etc/serf-events.sh -node=$(hostname -f) -join=172.17.0.5
+serf agent -rpc-addr=$(hostname -i):7373 -bind=$(hostname -i) -event-handler=/etc/serf-events.sh -node=$(hostname -f) -join=172.17.0.2
 EOF
