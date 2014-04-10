@@ -42,11 +42,22 @@ docker run -i -t -P -h server.ambari.com --name ambari-singlenode sequenceiq/amb
 #detach from the container, so that it remains running by:
 <CTRL>-P <CTRL>-Q
 ```
+The explanation of the parameters:
+
+- -i: interactive, keep stdin open even if not attached
+- -t: allocate a pseudo-tty
+- -P: expse all ports defined in the Dockerfile
+- -h server.ambari.com: sets the hostname
+- -bash: this is a parameter for the /etc/bootstrap.sh script
+  meaning once the abari agent and server are running start a bash.
+
 
 ## Cluster deployment via Ambari
 
 Once the image is backen you need a single step:
 ```
+git clone git@github.com:sequenceiq/ambari-docker.git
+cd ambari-docker
 ./single-node-cluster-blueprint.sh
 ```
 This script uses Ambari's new [Blueprints](https://cwiki.apache.org/confluence/display/AMBARI/Blueprints)
@@ -71,7 +82,7 @@ It took me about 18 minutes until ambari installs and starts these components:
 - ZOOKEEPER_SERVER
 
 To check the process you can either watch the web interface at
-http://localhost:491XX/
+`http://localhost:491XX/`
 You can find out the exact portnumber by:
 ```
 docker port $(docker ps -q -l) 8080
