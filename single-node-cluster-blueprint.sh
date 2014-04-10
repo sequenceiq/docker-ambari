@@ -1,5 +1,7 @@
-docker run -p 8080 -h server.ambari.com --name ambari-singlenode sequenceiq/ambari
-AMBARI_ID=$(docker run -d -p 8080 -h server.ambari.com --name ambari-test ambari-test)
+# docker run -i -t -P -h server.ambari.com --name ambari-singlenode sequenceiq/ambari -bash
+# then CTRL-P CTL-Q to detach from the container
+
+AMBARI_ID=$(docker ps -ql)
 
 AMBARI_URL=$(docker port $AMBARI_ID 8080)
 AMBARI_FQDN=server.ambari.com
