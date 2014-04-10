@@ -1,4 +1,4 @@
-docker run -p 8080 -i -t -h server.ambari.com --name ambari-test ambari-test /bin/bash
+docker run -p 8080 -h server.ambari.com --name ambari-singlenode sequenceiq/ambari
 AMBARI_ID=$(docker run -d -p 8080 -h server.ambari.com --name ambari-test ambari-test)
 
 AMBARI_URL=$(docker port $AMBARI_ID 8080)
@@ -86,5 +86,13 @@ EOF
 
 ## check status
 : <<EOF
+PERCENT=0
+while [[ "$PERCENT" != "100.0" ]]; do
+  sleep 10
+  PERCENT=$(curl -s -u admin:admin "$AMBARI_URL/api/v1/clusters/MySingleNodeCluster/requests/1"|sed -n "/percent/ s/.* : \([0-9.]\{3,\}\).*/\1/p")
+  echo TASK-1 progress: $PERCENT
+done
 
+# list tasks with
+curl -s -u admin:admin "$AMBARI_URL/api/v1/clusters/MySingleNodeCluster/requests/1?fields=tasks/Tasks/command_detail,tasks/Tasks/status"|grep "command_detail\|status"
 EOF
