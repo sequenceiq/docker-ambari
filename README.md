@@ -52,7 +52,7 @@ The explanation of the parameters:
   meaning once the abari agent and server are running start a bash.
 
 
-## Cluster deployment via Ambari
+## Cluster deployment via blueprint
 
 Once the image is backen you need a single step:
 ```
