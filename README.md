@@ -26,16 +26,14 @@ Follow the description at the docker [getting started](https://www.docker.io/get
 **Note:** If you are using `boot2docker` make sure you forward all ports from docker:
 http://docs.docker.io/en/latest/installation/mac/#forwarding-vm-port-range-to-host
 
-## Building the image
+## Getting the image
 
-**Note:** this wont be necessary once docker.io finishes with the trusted build.
-But their build queue is rather long. You can check it here: https://index.docker.io/u/sequenceiq/ambari/
+To download the docker image, with preinstalled ambari 1.6
 
 ```
-docker clone git@github.com:sequenceiq/ambari-docker.git
-cd ambari-docker
-docker build -t sequenceiq/ambari ambari-server
+docker pull  sequenceiq/ambari
 ```
+
 ## Starting the container
 
 ```
