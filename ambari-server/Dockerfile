@@ -16,5 +16,11 @@ RUN ambari-server setup --silent -j /usr/jdk64/jdk1.7.0_45
 ADD system-auth /etc/pam.d/
 RUN sed -i.bak "/^hostname/ s/.*/hostname=server.ambari.com/" /etc/ambari-agent/conf/ambari-agent.ini
 
-#RUN su hdfs hadoop namenode -format
+ADD bootstrap.sh /etc/bootstrap.sh
+RUN chmod 700 /etc/bootstrap.sh
+
+ENTRYPOINT ["/etc/bootstrap.sh"]
+# by defualt start in foreground so docker doesnt terminate
+CMD ["-d"]
+
 EXPOSE 8080
