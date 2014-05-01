@@ -37,20 +37,14 @@ docker pull  sequenceiq/ambari
 ## Starting the container
 
 ```
-docker run -i -t -P -h server.ambari.com --name ambari-singlenode sequenceiq/ambari -bash
+docker run -d -P -h server.ambari.com --name ambari-singlenode sequenceiq/ambari -d
 
-#detach from the container, so that it remains running by:
-<CTRL>-P <CTRL>-Q
 ```
 The explanation of the parameters:
 
-- -i: interactive, keep stdin open even if not attached
-- -t: allocate a pseudo-tty
+- -d: run as daemon
 - -P: expse all ports defined in the Dockerfile
 - -h server.ambari.com: sets the hostname
-- -bash: this is a parameter for the /etc/bootstrap.sh script
-  meaning once the abari agent and server are running start a bash.
-
 
 ## Cluster deployment via blueprint
 
@@ -87,4 +81,7 @@ You can find out the exact portnumber by:
 ```
 docker port $(docker ps -q -l) 8080
 ```
-##
+## Coming soon
+
+This documents described a pseudo distributed ambari cluster. Stay tuned for the
+real cluster ...
