@@ -6,6 +6,14 @@ gpgkey=http://public-repo-1.hortonworks.com/ambari/centos6/RPM-GPG-KEY/RPM-GPG-K
 enabled=1
 priority=1
 
+[HDP-UTILS-1.1.0.16]
+name=Hortonworks Data Platform Utils Version - HDP-UTILS-1.1.0.16
+baseurl=http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.16/repos/centos6
+gpgcheck=0
+gpgkey=http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.16/repos/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+enabled=1
+priority=1
+
 [Updates-ambari-1.5.1]
 name=ambari-1.5.1 - Updates
 baseurl=http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.5.1
