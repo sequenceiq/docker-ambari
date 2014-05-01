@@ -26,20 +26,16 @@ Follow the description at the docker [getting started](https://www.docker.io/get
 **Note:** If you are using `boot2docker` make sure you forward all ports from docker:
 http://docs.docker.io/en/latest/installation/mac/#forwarding-vm-port-range-to-host
 
-## Getting the image
-
-To download the docker image, with preinstalled ambari 1.6
-
-```
-docker pull  sequenceiq/ambari
-```
-
 ## Starting the container
 
-```
-docker run -d -P -h server.ambari.com --name ambari-singlenode sequenceiq/ambari -d
+This will start (and download if you never used it before) an image based on
+centos-6 with preinstalled ambari 1.5.1 ready to install HDP 2.1.
 
 ```
+docker run -d -P -h server.ambari.com --name ambari-singlenode sequenceiq/ambari
+
+```
+
 The explanation of the parameters:
 
 - -d: run as daemon
