@@ -19,8 +19,6 @@ RUN sed -i.bak "/^hostname/ s/.*/hostname=server.ambari.com/" /etc/ambari-agent/
 ADD bootstrap.sh /etc/bootstrap.sh
 RUN chmod 700 /etc/bootstrap.sh
 
-ENTRYPOINT ["/etc/bootstrap.sh"]
-# by defualt start in foreground so docker doesnt terminate
-CMD ["-d"]
+CMD ["/etc/bootstrap.sh"]
 
 EXPOSE 8080 50020 50090 50070 50010 50075 8031 8032 8033 8040 8042 49707 22 8088 8030
