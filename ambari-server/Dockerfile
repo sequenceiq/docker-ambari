@@ -2,7 +2,8 @@
 #
 # docker build -t seq/ambari ambari-server
 
-FROM tianon/centos
+#FROM tianon/centos
+FROM sequenceiq/dnsmasq
 MAINTAINER SequenceIQ
 
 ADD hdp.repo /etc/yum.repos.d/
