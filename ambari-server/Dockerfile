@@ -17,9 +17,8 @@ RUN ambari-server setup --silent -j /usr/jdk64/jdk1.7.0_45
 ADD system-auth /etc/pam.d/
 RUN sed -i.bak "/^hostname/ s/.*/hostname=server.ambari.com/" /etc/ambari-agent/conf/ambari-agent.ini
 
-ADD bootstrap.sh /etc/bootstrap.sh
-RUN chmod 700 /etc/bootstrap.sh
-
-CMD ["/etc/bootstrap.sh"]
-
 EXPOSE 8080 50020 50090 50070 50010 50075 8031 8032 8033 8040 8042 49707 22 8088 8030
+ADD serf /usr/local/serf
+
+ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
+CMD --log-level debug

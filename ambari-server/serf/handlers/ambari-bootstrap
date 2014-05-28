@@ -1,0 +1,18 @@
+#!/bin/bash -x
+LOGFILE=/tmp/ambari.log
+EVENT_LOG=/tmp/serf-$(date +%Y%m%d-%H%M).log
+
+cat > $EVENT_LOG
+
+if [[ "member-join" == "$SERF_EVENT" ]] && grep "$SERF_SELF_NAME" $EVENT_LOG ; then
+
+  if [[ "$SERF_TAG_AMBARI_ROLE" == *server* ]] ;then
+    echo [START] server ... >> $LOGFILE
+    ambari-server start
+  fi
+
+  if [[ "$SERF_TAG_AMBARI_ROLE" == *agent* ]]; then
+    echo [START] agent ... >> $LOGFILE
+    ambari-agent start
+  fi
+fi
