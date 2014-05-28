@@ -12,6 +12,8 @@ if [[ "member-join" == "$SERF_EVENT" ]] && grep "$SERF_SELF_NAME" $EVENT_LOG ; t
   fi
 
   if [[ "$SERF_TAG_AMBARI_ROLE" == *agent* ]]; then
+    echo [TODO] replace server address
+    # RUN sed -i.bak "/^hostname/ s/.*/hostname=XXX/" /etc/ambari-agent/conf/ambari-agent.ini
     echo [START] agent ... >> $LOGFILE
     ambari-agent start
   fi

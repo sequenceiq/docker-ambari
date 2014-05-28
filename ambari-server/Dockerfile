@@ -15,7 +15,7 @@ RUN ambari-server setup --silent -j /usr/jdk64/jdk1.7.0_45
 #ambari-server setup --silent -j /usr/jdk64/jdk1.7.0_45 -r /var/lib/ambari-server/resources/Ambari-DDL-Postgres-DROP.sql -v
 
 ADD system-auth /etc/pam.d/
-RUN sed -i.bak "/^hostname/ s/.*/hostname=server.mycorp.kom/" /etc/ambari-agent/conf/ambari-agent.ini
+RUN sed -i.bak "/^hostname/ s/.*/hostname=amb0.mycorp.kom/" /etc/ambari-agent/conf/ambari-agent.ini
 
 ADD serf /usr/local/serf
 
