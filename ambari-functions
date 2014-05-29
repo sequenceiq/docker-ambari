@@ -1,5 +1,5 @@
 ############################################
-# curl -Lo /tmp/docker-functions http://j.mp/docker-functions && source /tmp/docker-functions
+# curl -Lo /tmp/ambari-functions http://j.mp/ambari-functions && source /tmp/ambari-functions
 ############################################
 
 : ${NODE_PREFIX=amb}
