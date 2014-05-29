@@ -3,7 +3,7 @@
 : ${NODE_PREFIX=amb}
 : ${MYDOMAIN:=mycorp.kom}
 : ${IMAGE:="sequenceiq/ambari:dns"}
-: ${DOCKER_OPTS:="--dns 127.0.0.1 --entrypoint /bin/sh"}
+: ${DOCKER_OPTS:="--dns 127.0.0.1"}
 : ${DEBUG:=1}
 
 amb-clean() {
@@ -39,13 +39,13 @@ docker-psa() {
 }
 
 get-join-ip() {
-  : ${SERF_JOIN_IP:=$(docker inspect --format="{{.NetworkSettings.IPAddress}}" ${NODE_PREFIX}0)}
+  SERF_JOIN_IP=$(docker inspect --format="{{.NetworkSettings.IPAddress}}" ${NODE_PREFIX}0)
   # docker inspect --format="{{.Name}}" $(docker ps -q)|sed -n "/$NODE_PREFIX/ s:/${NODE_PREFIX}::p"
-  debug SERF_JOIN_IP=$SERF_JOIN_IP
+  #debug SERF_JOIN_IP=$SERF_JOIN_IP
 }
 
 amb-start-first() {
-  CMD="docker run -d $DOCKER_OPTS --name ${NODE_PREFIX}0 -h ${NODE_PREFIX}0.$MYDOMAIN $IMAGE -c '/usr/local/serf/bin/start-serf-agent.sh --tag ambari-role=server,agent'"
+  CMD="docker run -d $DOCKER_OPTS --name ${NODE_PREFIX}0 -h ${NODE_PREFIX}0.$MYDOMAIN $IMAGE --tag ambari-role=server,agent"
   debug $CMD
   $CMD
 }
@@ -60,7 +60,7 @@ amb-start-node() {
     shift
     MORE_OPTIONS="$@"
   fi
-  CMD="docker run $MORE_OPTIONS -e SERF_JOIN_IP=$SERF_JOIN_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE -c /usr/local/serf/bin/start-serf-agent.sh"
+  CMD="docker run $MORE_OPTIONS -e SERF_JOIN_IP=$SERF_JOIN_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE"
   debug $CMD
   $CMD
 }
