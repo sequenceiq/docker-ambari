@@ -1,4 +1,6 @@
-#!/bin/bash
+############################################
+# curl -Lo /tmp/docker-functions http://j.mp/docker-functions && source /tmp/docker-functions
+############################################
 
 : ${NODE_PREFIX=amb}
 : ${MYDOMAIN:=mycorp.kom}
