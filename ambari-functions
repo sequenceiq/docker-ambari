@@ -62,7 +62,7 @@ amb-start-node() {
     shift
     MORE_OPTIONS="$@"
   fi
-  CMD="docker run $MORE_OPTIONS -e SERF_JOIN_IP=$SERF_JOIN_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE"
+  CMD="docker run $MORE_OPTIONS -e SERF_JOIN_IP=$SERF_JOIN_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug"
   debug $CMD
   $CMD
 }
