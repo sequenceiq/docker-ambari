@@ -20,4 +20,4 @@ RUN sed -i.bak "/^hostname/ s/.*/hostname=amb0.mycorp.kom/" /etc/ambari-agent/co
 ADD serf /usr/local/serf
 
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
-CMD --log-level debug
+CMD ["--log-level", "debug"]
