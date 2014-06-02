@@ -5,7 +5,7 @@
 : ${NODE_PREFIX=amb}
 : ${MYDOMAIN:=mycorp.kom}
 : ${IMAGE:="sequenceiq/ambari:dns"}
-: ${DOCKER_OPTS:="--dns 127.0.0.1"}
+: ${DOCKER_OPTS:="--dns 127.0.0.1 --entrypoint /usr/local/serf/bin/start-serf-agent.sh"}
 : ${DEBUG:=1}
 
 amb-clean() {
