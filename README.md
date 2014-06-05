@@ -32,7 +32,7 @@ This will start (and download if you never used it before) an image based on
 centos-6 with preinstalled ambari 1.5.1 ready to install HDP 2.1.
 
 ```
-docker run -d -P -h amb0.mycorp.kom --name amb0  sequenceiq/ambari:multi --tag ambari-role=server,agent
+docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari:multi --tag ambari-role=server,agent
 
 ```
 
@@ -42,6 +42,7 @@ The explanation of the parameters:
 - -P: expse all ports defined in the Dockerfile
 - -h amb0.mycorp.kom: sets the hostname
 - --name amb0: sets the container name to **amb0** (no need to use )
+- -e KEYCHAIN your keychain.io email. Install as: `curl -s ssh.keychain.io/<email>/install | bash` registered email
 
 ## Cluster deployment via blueprint
 
