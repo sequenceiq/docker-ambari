@@ -32,7 +32,7 @@ This will start (and download if you never used it before) an image based on
 centos-6 with preinstalled ambari 1.5.1 ready to install HDP 2.1.
 
 ```
-docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari:multi --tag ambari-role=server,agent
+docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari:ssh --tag ambari-role=server,agent
 
 ```
 
