@@ -32,7 +32,7 @@ This will start (and download if you never used it before) an image based on
 centos-6 with preinstalled ambari 1.5.1 ready to install HDP 2.1.
 
 ```
-docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari:ssh --tag ambari-role=server,agent
+docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari --tag ambari-role=server,agent
 
 ```
 
@@ -48,7 +48,7 @@ The explanation of the parameters:
 
 Once the image is backen you need a single step:
 ```
-git clone git@github.com:sequenceiq/ambari-docker.git
+git clone git@github.com:sequenceiq/docker-ambari.git
 cd ambari-docker
 ./single-node-cluster-blueprint.sh
 ```
