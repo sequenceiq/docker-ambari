@@ -1,5 +1,5 @@
 ############################################
-# curl -Lo /tmp/ambari-functions http://j.mp/ambari-functions && source /tmp/ambari-functions
+# curl -Lo /tmp/ambari-functions https://raw.githubusercontent.com/sequenceiq/docker-ambari/master/ambari-functions && source /tmp/ambari-functions
 ############################################
 
 : ${NODE_PREFIX=amb}
