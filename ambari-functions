@@ -16,7 +16,7 @@ amb-clean() {
 
 amb-members() {
   get-join-ip
-  serf members --rpc-addr $(docker inspect --format "{{.NetworkSettings.IPAddress}}" ${NODE_PREFIX}0):7373
+  serf members --rpc-addr $(docker inspect --format "{{.NetworkSettings.IPAddress}}" ${AMBARI_SERVER_NAME}):7373
 }
 amb-settings() {
   cat <<EOF
@@ -43,8 +43,7 @@ docker-psa() {
 }
 
 get-join-ip() {
-  SERF_JOIN_IP=$(docker inspect --format="{{.NetworkSettings.IPAddress}}" ${NODE_PREFIX}0)
-  # docker inspect --format="{{.Name}}" $(docker ps -q)|sed -n "/$NODE_PREFIX/ s:/${NODE_PREFIX}::p"
+  SERF_JOIN_IP=$(docker inspect --format="{{.NetworkSettings.IPAddress}}" ${AMBARI_SERVER_NAME})
   #debug SERF_JOIN_IP=$SERF_JOIN_IP
 }
 
@@ -127,4 +126,11 @@ _wait-for-ambari-agent
 _wait-for-ambari-server
 _wait-for-running-state
 _wait-for-self-connected-agent
+}
+
+amb-shell() {
+  get-join-ip
+  CMD="docker run -it sequenceiq/ambari-shell --ambari.host=$SERF_JOIN_IP"
+  debug $CMD
+  $CMD
 }
