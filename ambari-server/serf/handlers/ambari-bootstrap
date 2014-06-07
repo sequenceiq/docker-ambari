@@ -4,16 +4,21 @@ EVENT_LOG=/tmp/serf-$(date +%Y%m%d-%H%M).log
 
 cat > $EVENT_LOG
 
+# if I am server and I am listed in the member-join event: start server
 if [[ "member-join" == "$SERF_EVENT" ]] && grep "$SERF_SELF_NAME" $EVENT_LOG ; then
 
   if [[ "$SERF_TAG_AMBARI_ROLE" == *server* ]] ;then
     echo [START] server ... >> $LOGFILE
     ambari-server start
   fi
+fi
 
-  if [[ "$SERF_TAG_AMBARI_ROLE" == *agent* ]]; then
-    echo [TODO] replace server address
-    # RUN sed -i.bak "/^hostname/ s/.*/hostname=XXX/" /etc/ambari-agent/conf/ambari-agent.ini
+# if there is a server joing and I am an agent: start agent
+if [[ "$SERF_TAG_AMBARI_ROLE" == *agent* ]];then
+  if grep 'ambari-role=server' $EVENT_LOG; then
+
+    AMBARI_SERVER=$(grep 'ambari-role=server' $EVENT_LOG|cut -f 1)
+    sed -i.bak "/^hostname/ s/.*/hostname=${AMBARI_SERVER}/" /etc/ambari-agent/conf/ambari-agent.ini
     echo [START] agent ... >> $LOGFILE
     ambari-agent start
   fi
