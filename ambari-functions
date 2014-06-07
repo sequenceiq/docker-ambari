@@ -27,7 +27,7 @@ EOF
 }
 
 debug() {
-  [ -z $DEBUG ] || echo [DEBUG] $@
+  [ $DEBUG -gt 0 ] && echo [DEBUG] "$@"
 }
 
 docker-ps() {
