@@ -131,7 +131,7 @@ _wait-for-self-connected-agent
 
 amb-shell() {
   get-join-ip
-  CMD="docker run -it sequenceiq/ambari-shell --ambari.host=$SERF_JOIN_IP"
+  CMD="docker run -it sequenceiq/ambari-shell --ambari.host=$SERF_JOIN_IP $@"
   debug $CMD
   $CMD
 }
