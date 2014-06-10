@@ -19,5 +19,8 @@ RUN yum install -y curl
 RUN curl -L https://api.github.com/repos/sequenceiq/docker-ssh/tarball/master|tar -xz -C /usr/local/serf --strip-components=2 --touch \*/serf
 RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/install-ssh.sh | bash
 
+# fix annoying PAM error 'couldnt open session'
+RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
+
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
 CMD ["--log-level", "debug"]
