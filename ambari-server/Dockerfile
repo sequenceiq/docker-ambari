@@ -10,8 +10,6 @@ RUN mkdir -p /usr/jdk64/ && curl http://public-repo-1.hortonworks.com/ARTIFACTS/
 RUN ambari-server setup --silent -j /usr/jdk64/jdk1.7.0_45
 #ambari-server setup --silent -j /usr/jdk64/jdk1.7.0_45 -r /var/lib/ambari-server/resources/Ambari-DDL-Postgres-DROP.sql -v
 
-RUN sed -i.bak "/^hostname/ s/.*/hostname=amb0.mycorp.kom/" /etc/ambari-agent/conf/ambari-agent.ini
-
 ADD serf /usr/local/serf
 
 # instead of starting the docker file FROM sequenceiq/ssh:
