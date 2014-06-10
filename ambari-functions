@@ -117,7 +117,7 @@ _wait-for-running-state() {
 
 _wait-for-self-connected-agent() {
   debug wait for self connected ambari-agent
-  _wait-for-grep-command $AMBARI_HOST "curl -s -u admin:admin $AMBARI_HOST:8080/api/v1/hosts"
+  _wait-for-grep-command $AMBARI_SERVER_NAME.$MYDOMAIN "curl -s -u admin:admin $AMBARI_HOST:8080/api/v1/hosts"
 }
 
 amb-wait-for-server() {
