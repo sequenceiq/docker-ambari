@@ -4,6 +4,6 @@
   ],
 
   "tags" : {
-    "ambari-role": "agent"
+    "ambari-agent": "true"
   }
 }
