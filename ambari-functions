@@ -30,7 +30,7 @@ EOF
 }
 
 debug() {
-  [ $DEBUG -gt 0 ] && echo [DEBUG] "$@"
+  [ $DEBUG -gt 0 ] && echo [DEBUG] "$@" 1>&2
 }
 
 docker-ps() {
