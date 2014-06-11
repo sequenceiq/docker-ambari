@@ -49,7 +49,7 @@ get-join-ip() {
 }
 
 amb-start-first() {
-  CMD="docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-role=server,agent"
+  CMD="docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true"
   debug $CMD
   $CMD
 }
