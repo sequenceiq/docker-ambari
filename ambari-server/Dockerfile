@@ -6,9 +6,7 @@ ADD hdp.repo /etc/yum.repos.d/
 ADD ambari.repo /etc/yum.repos.d/
 RUN yum install -y ambari-server ambari-agent
 RUN yum install -y tar git curl
-RUN mkdir -p /usr/jdk64/ && curl http://public-repo-1.hortonworks.com/ARTIFACTS/jdk-7u45-linux-x64.tar.gz | tar -xz -C /usr/jdk64/
-RUN ambari-server setup --silent -j /usr/jdk64/jdk1.7.0_45
-#ambari-server setup --silent -j /usr/jdk64/jdk1.7.0_45 -r /var/lib/ambari-server/resources/Ambari-DDL-Postgres-DROP.sql -v
+RUN ambari-server setup --silent
 
 ADD serf /usr/local/serf
 
