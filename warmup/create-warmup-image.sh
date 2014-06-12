@@ -21,19 +21,14 @@ docker commit $AMBARI_CONTAINER $WARM_IMAGE:dirty
 
 debug clean container
 docker stop -t 0 $AMBARI_CONTAINER
-docker rm $AMBARI_CONTAINER
+#docker rm $AMBARI_CONTAINER
 
 debug clean up image by reseting psql db
-rm -rf $BUILD_DIR
-mkdir -p $BUILD_DIR
-cat > $BUILD_DIR/Dockerfile <<EOF
+
+docker build --no-cache=true -t $WARM_IMAGE - <<EOF
 FROM $WARM_IMAGE:dirty
 
-RUN ambari-server start ; ambari-server stop; ambari-server reset --silent
+RUN service postgresql restart ; ambari-server reset --silent
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
 CMD ["--log-level", "debug"]
 EOF
-
-cd $BUILD_DIR
-docker build -t $WARM_IMAGE .
-cd -
