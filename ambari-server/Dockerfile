@@ -20,5 +20,6 @@ RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/insta
 # fix annoying PAM error 'couldnt open session'
 RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 
+EXPOSE 8080
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
 CMD ["--log-level", "debug"]
