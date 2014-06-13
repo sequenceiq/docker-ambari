@@ -14,7 +14,7 @@ run-command-unless-dry-run() {
   CMD="$@"
   if [ "$DRY_RUN" == "false" ]; then
     debug "$CMD"
-    $CMD
+    "$@"
   else
     debug [DRY_RUN] "$CMD"
   fi
