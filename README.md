@@ -32,53 +32,38 @@ This will start (and download if you never used it before) an image based on
 centos-6 with preinstalled ambari 1.5.1 ready to install HDP 2.1.
 
 ```
-docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari --tag ambari-role=server,agent
-
+docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari --tag ambari-server=true
 ```
 
 The explanation of the parameters:
 
-- -d: run as daemon
-- -P: expse all ports defined in the Dockerfile
-- -h amb0.mycorp.kom: sets the hostname
-- --name amb0: sets the container name to **amb0** (no need to use )
-- -e KEYCHAIN your keychain.io email. Install as: `curl -s ssh.keychain.io/<email>/install | bash` registered email
+- **-d**: run as daemon
+- **-P**: expose all ports defined in the Dockerfile
+- **-h amb0.mycorp.kom**: sets the hostname
+- **--name amb0**: sets the container name to **amb0** (no need to use )
+- **-e KEYCHAIN=<email>** your keychain.io email. Keychain.io is a free service
+  which can store, and serve pulic keys for ssh authentication.
+  You can upload you public key as: `curl -s ssh.keychain.io/<email>/install | bash`
 
 ## Cluster deployment via blueprint
 
-Once the image is backen you need a single step:
-```
-git clone git@github.com:sequenceiq/docker-ambari.git
-cd ambari-docker
-./single-node-cluster-blueprint.sh
-```
-This script uses Ambari's new [Blueprints](https://cwiki.apache.org/confluence/display/AMBARI/Blueprints)
-capability. You just simple post a cluster definition JSON to the ambari REST api,
-grab a cup coffee, and after about 15 minutes, you have a ready HDP 2.1 cluster.
+Once the container is running, you can deploy a cluster. Instead of going to
+the webui, we can use ambari-shell, which can interact with ambari via cli,
+or perform automated provisioning. We will use the automated way, and of
+course there is a docker image, with prepared ambari-shell in it:
 
-## Check the progress
-
-It took me about 18 minutes until ambari installs and starts these components:
-- DATANODE
-- GANGLIA_MONITOR
-- GANGLIA_SERVER
-- HDFS_CLIENT
-- HISTORYSERVER
-- MAPREDUCE2_CLIENT
-- NAMENODE
-- NODEMANAGER
-- RESOURCEMANAGER
-- SECONDARY_NAMENODE
-- YARN_CLIENT
-- ZOOKEEPER_CLIENT
-- ZOOKEEPER_SERVER
-
-To check the process you can either watch the web interface at
-`http://localhost:491XX/`
-You can find out the exact portnumber by:
 ```
-docker port $(docker ps -q -l) 8080
+docker run -e BLUEPRINT=single-node-hdfs-yarn --link amb0:ambariserver -t --rm --entrypoint /bin/sh sequenceiq/ambari-shell -c /tmp/install-cluster.sh
 ```
+
+Ambari-shell uses Ambari's new [Blueprints](https://cwiki.apache.org/confluence/display/AMBARI/Blueprints)
+capability. It just simple posts a cluster definition JSON to the ambari REST api,
+and 1 more json for cluster creation, where you specify which hosts go
+to which hostgroup.
+
+Ambari shell will show the progress in the upper right corner.
+So grab a cup coffee, and after about 10 minutes, you have a ready HDP 2.1 cluster.
+
 ## Coming soon
 
 This documents described a pseudo distributed ambari cluster. Stay tuned for the
