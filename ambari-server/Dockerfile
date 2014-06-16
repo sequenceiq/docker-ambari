@@ -29,6 +29,8 @@ ENV JAVA_HOME /usr/jdk64/jdk1.7.0_45
 ENV PATH $PATH:$JAVA_HOME/bin
 WORKDIR /tmp
 
+# fixing pgsql issue
+RUN rm -rf /tmp/.s.PGSQL.5432.*
 
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
