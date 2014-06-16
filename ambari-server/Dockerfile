@@ -21,6 +21,15 @@ RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 # warm up the image
 RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper
 
+# add ambari shell to the image so new users don't need the 1GB java image
+RUN curl -Ls https://raw.githubusercontent.com/sequenceiq/ambari-shell/master/latest-snap.sh | bash
+ADD install-cluster.sh /tmp/
+ADD wait-for-host-number.sh /tmp/
+ENV JAVA_HOME /usr/jdk64/jdk1.7.0_45
+ENV PATH $PATH:$JAVA_HOME/bin
+WORKDIR /tmp
+
+
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
 CMD ["--log-level", "debug"]
