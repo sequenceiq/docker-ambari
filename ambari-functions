@@ -11,13 +11,18 @@
 : ${SLEEP_TIME:=2}
 
 amb-clean() {
-  unset NODE_PREFIX AMBARI_SERVER_NAME MYDOMAIN IMAGE DOCKER_OPTS DEBUG SLEEP_TIME SERF_JOIN_IP
+  unset NODE_PREFIX AMBARI_SERVER_NAME MYDOMAIN IMAGE DOCKER_OPTS DEBUG SLEEP_TIME AMBARI_SERVER_IP
+}
+
+get-ambari-server-ip() {
+  AMBARI_SERVER_IP=$(docker inspect --format="{{.NetworkSettings.IPAddress}}" ${AMBARI_SERVER_NAME})
 }
 
 amb-members() {
-  get-join-ip
+  get-ambari-server-ip
   serf members --rpc-addr $(docker inspect --format "{{.NetworkSettings.IPAddress}}" ${AMBARI_SERVER_NAME}):7373
 }
+
 amb-settings() {
   cat <<EOF
   NODE_PREFIX=$NODE_PREFIX
@@ -25,7 +30,7 @@ amb-settings() {
   AMBARI_SERVER_NAME=$AMBARI_SERVER_NAME
   IMAGE=$IMAGE
   DOCKER_OPTS=$DOCKER_OPTS
-  SERF_JOIN_IP=$SERF_JOIN_IP
+  AMBARI_SERVER_IP=$AMBARI_SERVER_IP
 EOF
 }
 
@@ -43,11 +48,6 @@ docker-psa() {
   docker inspect --format="{{.Name}} {{.NetworkSettings.IPAddress}} {{.Config.Image}} {{.Config.Entrypoint}} {{.Config.Cmd}}" $(docker ps -qa)
 }
 
-get-join-ip() {
-  SERF_JOIN_IP=$(docker inspect --format="{{.NetworkSettings.IPAddress}}" ${AMBARI_SERVER_NAME})
-  #debug SERF_JOIN_IP=$SERF_JOIN_IP
-}
-
 amb-start-first() {
   CMD="docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true"
   debug $CMD
@@ -55,8 +55,8 @@ amb-start-first() {
 }
 
 amb-start-node() {
-  get-join-ip
-  : ${SERF_JOIN_IP:?"SERF_JOIN_IP is needed"}
+  get-ambari-server-ip
+  : ${AMBARI_SERVER_IP:?"AMBARI_SERVER_IP is needed"}
   NUMBER=${1:?"please give a <NUMBER> parameter it will be used as node<NUMBER>"}
   if [ $# -eq 1 ] ;then
     MORE_OPTIONS="-d"
@@ -64,7 +64,7 @@ amb-start-node() {
     shift
     MORE_OPTIONS="$@"
   fi
-  CMD="docker run $MORE_OPTIONS -e SERF_JOIN_IP=$SERF_JOIN_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug"
+  CMD="docker run $MORE_OPTIONS -e SERF_JOIN_IP=$AMBARI_SERVER_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug"
   debug $CMD
   $CMD
 }
@@ -130,8 +130,8 @@ _wait-for-self-connected-agent
 }
 
 amb-shell() {
-  get-join-ip
-  CMD="docker run -it sequenceiq/ambari-shell --ambari.host=$SERF_JOIN_IP $@"
+  get-ambari-server-ip
+  CMD="docker run -it sequenceiq/ambari-shell --ambari.host=$AMBARI_SERVER_IP $@"
   debug $CMD
   $CMD
 }
