@@ -25,6 +25,7 @@ RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-nati
 RUN curl -Ls https://raw.githubusercontent.com/sequenceiq/ambari-shell/master/latest-snap.sh | bash
 ADD install-cluster.sh /tmp/
 ADD wait-for-host-number.sh /tmp/
+ADD ambari-shell.sh /tmp/
 ENV JAVA_HOME /usr/jdk64/jdk1.7.0_45
 ENV PATH $PATH:$JAVA_HOME/bin
 WORKDIR /tmp
