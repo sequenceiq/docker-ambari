@@ -15,7 +15,12 @@ amb-clean() {
 }
 
 get-ambari-server-ip() {
-  AMBARI_SERVER_IP=$(docker inspect --format="{{.NetworkSettings.IPAddress}}" ${AMBARI_SERVER_NAME})
+  AMBARI_SERVER_IP=$(get-host-ip ${AMBARI_SERVER_NAME})
+}
+
+get-host-ip() {
+  HOST=$1
+  docker inspect --format="{{.NetworkSettings.IPAddress}}" ${HOST}
 }
 
 amb-members() {
@@ -60,8 +65,9 @@ amb-copy-to-hdfs() {
   FILE_NAME=${2:?"usage: <FILE_PATH> <NEW_FILE_NAME_ON_HDFS> <HDFS_PATH>"}
   DIR=${3:?"usage: <FILE_PATH> <NEW_FILE_NAME_ON_HDFS> <HDFS_PATH>"}
   amb-create-hdfs-dir $DIR
-  curl -X PUT "http://$AMBARI_SERVER_IP:50070/webhdfs/v1$DIR/$FILE_NAME?user.name=hdfs&op=CREATE"
-  curl -T $FILE_PATH "http://$AMBARI_SERVER_IP:50075/webhdfs/v1$DIR/$FILE_NAME?op=CREATE&user.name=hdfs&overwrite=true&namenoderpcaddress=$AMBARI_SERVER_IP:8020"
+  DATANODE=$(curl -si -X PUT "http://$AMBARI_SERVER_IP:50070/webhdfs/v1$DIR/$FILE_NAME?user.name=hdfs&op=CREATE" |grep Location | sed "s/\..*//; s@.*http://@@")
+  DATANODE_IP=$(get-host-ip $DATANODE)
+  curl -T $FILE_PATH "http://$DATANODE_IP:50075/webhdfs/v1$DIR/$FILE_NAME?op=CREATE&user.name=hdfs&overwrite=true&namenoderpcaddress=$AMBARI_SERVER_IP:8020"
 }
 
 amb-create-hdfs-dir() {
