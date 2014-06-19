@@ -91,16 +91,19 @@ amb-shell() {
 }
 
 amb-deploy-cluster() {
-  BLUEPRINT=$1
+  local act_cluster_size=$1
+  : ${act_cluster_size:=$CLUSTER_SIZE}
+
+  if [ $# -gt 1 ]; then
+    BLUEPRINT=$2
+  else
+    [ $act_cluster_size -gt 1 ] && BLUEPRINT=multi-node-hdfs-yarn || BLUEPRINT=single-node-hdfs-yarn
+  fi
+
   : ${BLUEPRINT:?" required (single-node-hdfs-yarn / multi-node-hdfs-yarn / hdp-singlenode-default / hdp-multinode-default)"}
 
-  if [ ${#BLUEPRINT} -gt 5 ] ; then
-    amb-start-cluster $2
-    _amb_run_shell /tmp/install-cluster.sh
-  else
-    echo "[WARNING] you defined a blueprint with a very short name"
-    echo "[WARNING] arguments: <blueprint> <cluster-size>"
-  fi
+  amb-start-cluster $act_cluster_size
+  _amb_run_shell /tmp/install-cluster.sh
 }
 
 amb-start-first() {
