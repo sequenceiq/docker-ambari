@@ -89,6 +89,20 @@ _amb_run_shell() {
 amb-shell() {
   _amb_run_shell /tmp/ambari-shell.sh
 }
+
+amb-deploy-cluster() {
+  BLUEPRINT=$1
+  : ${BLUEPRINT:?" required (single-node-hdfs-yarn / multi-node-hdfs-yarn / hdp-singlenode-default / hdp-multinode-default)"}
+
+  if [ ${#BLUEPRINT} -gt 5 ] ; then
+    amb-start-cluster $2
+    _amb_run_shell /tmp/install-cluster.sh
+  else
+    echo "[WARNING] you defined a blueprint with a very short name"
+    echo "[WARNING] arguments: <blueprint> <cluster-size>"
+  fi
+}
+
 amb-start-first() {
   run-command-unless-dry-run docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
 }
