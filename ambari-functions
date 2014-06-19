@@ -70,6 +70,13 @@ amb-create-hdfs-dir() {
   curl -X PUT "http://$AMBARI_SERVER_IP:50070/webhdfs/v1$DIR?user.name=hdfs&op=MKDIRS" > /dev/null 2>&1
 }
 
+amb-scp-to-first() {
+  get-ambari-server-ip
+  FILE_PATH=${1:?"usage: <FILE_PATH> <DESTINATION_PATH>"}
+  DEST_PATH=${2:?"usage: <FILE_PATH> <DESTINATION_PATH>"}
+  scp $FILE_PATH root@$AMBARI_SERVER_IP:$DEST_PATH
+}
+
 amb-start-node() {
   get-ambari-server-ip
   : ${AMBARI_SERVER_IP:?"AMBARI_SERVER_IP is needed"}
