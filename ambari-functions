@@ -7,11 +7,23 @@
 : ${MYDOMAIN:=mycorp.kom}
 : ${IMAGE:="sequenceiq/ambari"}
 : ${DOCKER_OPTS:="--dns 127.0.0.1 --entrypoint /usr/local/serf/bin/start-serf-agent.sh -e KEYCHAIN=$KEYCHAIN"}
+: ${CLUSTER_SIZE:=3}
 : ${DEBUG:=1}
 : ${SLEEP_TIME:=2}
+: ${DRY_RUN:=false}
+
+run-command-unless-dry-run() {
+  CMD="$@"
+  if [ "$DRY_RUN" == "false" ]; then
+    debug "$CMD"
+    "$@"
+  else
+    debug [DRY_RUN] "$CMD"
+  fi
+}
 
 amb-clean() {
-  unset NODE_PREFIX AMBARI_SERVER_NAME MYDOMAIN IMAGE DOCKER_OPTS DEBUG SLEEP_TIME AMBARI_SERVER_IP
+  unset NODE_PREFIX AMBARI_SERVER_NAME MYDOMAIN IMAGE DOCKER_OPTS DEBUG SLEEP_TIME AMBARI_SERVER_IP DRY_RUN
 }
 
 get-ambari-server-ip() {
@@ -32,10 +44,12 @@ amb-settings() {
   cat <<EOF
   NODE_PREFIX=$NODE_PREFIX
   MYDOMAIN=$MYDOMAIN
+  CLUSTER_SIZE=$CLUSTER_SIZE
   AMBARI_SERVER_NAME=$AMBARI_SERVER_NAME
   IMAGE=$IMAGE
   DOCKER_OPTS=$DOCKER_OPTS
   AMBARI_SERVER_IP=$AMBARI_SERVER_IP
+  DRY_RUN=$DRY_RUN
 EOF
 }
 
@@ -53,10 +67,44 @@ docker-psa() {
   docker inspect --format="{{.Name}} {{.NetworkSettings.IPAddress}} {{.Config.Image}} {{.Config.Entrypoint}} {{.Config.Cmd}}" $(docker ps -qa)
 }
 
+amb-start-cluster() {
+  local act_cluster_size=$1
+  : ${act_cluster_size:=$CLUSTER_SIZE}
+  echo starting an ambari cluster with: $act_cluster_size nodes
+
+  amb-start-first
+  for i in $(seq $((act_cluster_size - 1))); do
+    amb-start-node $i
+  done
+}
+
+_amb_run_shell() {
+  COMMAND=$1
+  : ${COMMAND:? required}
+  get-ambari-server-ip
+  NODES=$(docker inspect --format="{{.Config.Image}}" $(docker ps -q)|grep $IMAGE|wc -l|xargs)
+  run-command-unless-dry-run docker run -it --rm -e EXPECTED_HOST_COUNT=$NODES -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver --entrypoint /bin/sh $IMAGE -c $COMMAND
+}
+
+amb-shell() {
+  _amb_run_shell /tmp/ambari-shell.sh
+}
+
+amb-deploy-cluster() {
+  BLUEPRINT=$1
+  : ${BLUEPRINT:?" required (single-node-hdfs-yarn / multi-node-hdfs-yarn / hdp-singlenode-default / hdp-multinode-default)"}
+
+  if [ ${#BLUEPRINT} -gt 5 ] ; then
+    amb-start-cluster $2
+    _amb_run_shell /tmp/install-cluster.sh
+  else
+    echo "[WARNING] you defined a blueprint with a very short name"
+    echo "[WARNING] arguments: <blueprint> <cluster-size>"
+  fi
+}
+
 amb-start-first() {
-  CMD="docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true"
-  debug $CMD
-  $CMD
+  run-command-unless-dry-run docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
 }
 
 amb-copy-to-hdfs() {
@@ -93,9 +141,7 @@ amb-start-node() {
     shift
     MORE_OPTIONS="$@"
   fi
-  CMD="docker run $MORE_OPTIONS -e SERF_JOIN_IP=$AMBARI_SERVER_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug"
-  debug $CMD
-  $CMD
+  run-command-unless-dry-run docker run $MORE_OPTIONS -e SERF_JOIN_IP=$AMBARI_SERVER_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug
 }
 
 _wait-for-grep-command() {
@@ -156,11 +202,4 @@ _wait-for-ambari-agent
 _wait-for-ambari-server
 _wait-for-running-state
 _wait-for-self-connected-agent
-}
-
-amb-shell() {
-  get-ambari-server-ip
-  CMD="docker run -it sequenceiq/ambari-shell --ambari.host=$AMBARI_SERVER_IP $@"
-  debug $CMD
-  $CMD
 }
