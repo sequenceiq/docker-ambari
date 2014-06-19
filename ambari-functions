@@ -7,6 +7,7 @@
 : ${MYDOMAIN:=mycorp.kom}
 : ${IMAGE:="sequenceiq/ambari"}
 : ${DOCKER_OPTS:="--dns 127.0.0.1 --entrypoint /usr/local/serf/bin/start-serf-agent.sh -e KEYCHAIN=$KEYCHAIN"}
+: ${CLUSTER_SIZE:=3}
 : ${DEBUG:=1}
 : ${SLEEP_TIME:=2}
 : ${DRY_RUN:=false}
@@ -43,6 +44,7 @@ amb-settings() {
   cat <<EOF
   NODE_PREFIX=$NODE_PREFIX
   MYDOMAIN=$MYDOMAIN
+  CLUSTER_SIZE=$CLUSTER_SIZE
   AMBARI_SERVER_NAME=$AMBARI_SERVER_NAME
   IMAGE=$IMAGE
   DOCKER_OPTS=$DOCKER_OPTS
@@ -65,6 +67,16 @@ docker-psa() {
   docker inspect --format="{{.Name}} {{.NetworkSettings.IPAddress}} {{.Config.Image}} {{.Config.Entrypoint}} {{.Config.Cmd}}" $(docker ps -qa)
 }
 
+amb-start-cluster() {
+  local act_cluster_size=$1
+  : ${act_cluster_size:=$CLUSTER_SIZE}
+  echo starting an ambari cluster with: $act_cluster_size nodes
+
+  amb-start-first
+  for i in $(seq $((act_cluster_size - 1))); do
+    amb-start-node $i
+  done
+}
 amb-start-first() {
   run-command-unless-dry-run docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
 }
