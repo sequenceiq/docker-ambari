@@ -77,6 +77,18 @@ amb-start-cluster() {
     amb-start-node $i
   done
 }
+
+_amb_run_shell() {
+  COMMAND=$1
+  : ${COMMAND:? required}
+  get-ambari-server-ip
+  NODES=$(docker inspect --format="{{.Config.Image}}" $(docker ps -q)|grep $IMAGE|wc -l|xargs)
+  run-command-unless-dry-run docker run -it --rm -e EXPECTED_HOST_COUNT=$NODES -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver --entrypoint /bin/sh $IMAGE -c $COMMAND
+}
+
+amb-shell() {
+  _amb_run_shell /tmp/ambari-shell.sh
+}
 amb-start-first() {
   run-command-unless-dry-run docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
 }
@@ -176,11 +188,4 @@ _wait-for-ambari-agent
 _wait-for-ambari-server
 _wait-for-running-state
 _wait-for-self-connected-agent
-}
-
-amb-shell() {
-  get-ambari-server-ip
-  CMD="docker run -it sequenceiq/ambari-shell --ambari.host=$AMBARI_SERVER_IP $@"
-  debug $CMD
-  $CMD
 }
