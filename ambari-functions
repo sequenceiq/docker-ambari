@@ -9,9 +9,20 @@
 : ${DOCKER_OPTS:="--dns 127.0.0.1 --entrypoint /usr/local/serf/bin/start-serf-agent.sh -e KEYCHAIN=$KEYCHAIN"}
 : ${DEBUG:=1}
 : ${SLEEP_TIME:=2}
+: ${DRY_RUN:=false}
+
+run-command-unless-dry-run() {
+  CMD="$@"
+  if [ "$DRY_RUN" == "false" ]; then
+    debug "$CMD"
+    "$@"
+  else
+    debug [DRY_RUN] "$CMD"
+  fi
+}
 
 amb-clean() {
-  unset NODE_PREFIX AMBARI_SERVER_NAME MYDOMAIN IMAGE DOCKER_OPTS DEBUG SLEEP_TIME AMBARI_SERVER_IP
+  unset NODE_PREFIX AMBARI_SERVER_NAME MYDOMAIN IMAGE DOCKER_OPTS DEBUG SLEEP_TIME AMBARI_SERVER_IP DRY_RUN
 }
 
 get-ambari-server-ip() {
@@ -36,6 +47,7 @@ amb-settings() {
   IMAGE=$IMAGE
   DOCKER_OPTS=$DOCKER_OPTS
   AMBARI_SERVER_IP=$AMBARI_SERVER_IP
+  DRY_RUN=$DRY_RUN
 EOF
 }
 
@@ -54,9 +66,7 @@ docker-psa() {
 }
 
 amb-start-first() {
-  CMD="docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true"
-  debug $CMD
-  $CMD
+  run-command-unless-dry-run docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
 }
 
 amb-copy-to-hdfs() {
@@ -93,9 +103,7 @@ amb-start-node() {
     shift
     MORE_OPTIONS="$@"
   fi
-  CMD="docker run $MORE_OPTIONS -e SERF_JOIN_IP=$AMBARI_SERVER_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug"
-  debug $CMD
-  $CMD
+  run-command-unless-dry-run docker run $MORE_OPTIONS -e SERF_JOIN_IP=$AMBARI_SERVER_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug
 }
 
 _wait-for-grep-command() {
