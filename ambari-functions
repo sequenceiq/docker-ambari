@@ -1,6 +1,10 @@
-############################################
-# curl -Lo /tmp/ambari-functions https://raw.githubusercontent.com/sequenceiq/docker-ambari/master/ambari-functions && source /tmp/ambari-functions
-############################################
+:<<USAGE
+########################################
+curl -Lo .amb j.mp/docker-ambari && . .amb
+########################################
+
+full documentation: https://github.com/sequenceiq/docker-ambari
+USAGE
 
 : ${NODE_PREFIX=amb}
 : ${AMBARI_SERVER_NAME:=${NODE_PREFIX}0}
