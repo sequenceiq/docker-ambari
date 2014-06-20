@@ -73,7 +73,7 @@ amb-start-cluster() {
   echo starting an ambari cluster with: $act_cluster_size nodes
 
   amb-start-first
-  for i in $(seq $((act_cluster_size - 1))); do
+  [ $act_cluster_size -gt 1 ] && for i in $(seq $((act_cluster_size - 1))); do
     amb-start-node $i
   done
 }
