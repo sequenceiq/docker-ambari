@@ -43,7 +43,7 @@ The explanation of the parameters:
 - **--name amb0**: sets the container name to **amb0** (no need to use )
 - **-e KEYCHAIN=<email>** your keychain.io email. Keychain.io is a free service
   which can store, and serve pulic keys for ssh authentication.
-  You can upload you public key as: `curl -s ssh.keychain.io/<email>/install | bash`
+  You can upload you public key as: `curl -s ssh.keychain.io/<email>/upload | bash`
 
 ## Cluster deployment via blueprint
 
