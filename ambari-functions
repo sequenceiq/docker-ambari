@@ -12,7 +12,7 @@
 : ${SLEEP_TIME:=2}
 : ${DRY_RUN:=false}
 
-run-command-unless-dry-run() {
+run-command() {
   CMD="$@"
   if [ "$DRY_RUN" == "false" ]; then
     debug "$CMD"
@@ -83,7 +83,7 @@ _amb_run_shell() {
   : ${COMMAND:? required}
   get-ambari-server-ip
   NODES=$(docker inspect --format="{{.Config.Image}}" $(docker ps -q)|grep $IMAGE|wc -l|xargs)
-  run-command-unless-dry-run docker run -it --rm -e EXPECTED_HOST_COUNT=$NODES -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver --entrypoint /bin/sh $IMAGE -c $COMMAND
+  run-command docker run -it --rm -e EXPECTED_HOST_COUNT=$NODES -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver --entrypoint /bin/sh $IMAGE -c $COMMAND
 }
 
 amb-shell() {
@@ -107,7 +107,7 @@ amb-deploy-cluster() {
 }
 
 amb-start-first() {
-  run-command-unless-dry-run docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
+  run-command docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
 }
 
 amb-copy-to-hdfs() {
@@ -144,5 +144,5 @@ amb-start-node() {
     shift
     MORE_OPTIONS="$@"
   fi
-  run-command-unless-dry-run docker run $MORE_OPTIONS -e SERF_JOIN_IP=$AMBARI_SERVER_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug
+  run-command docker run $MORE_OPTIONS -e SERF_JOIN_IP=$AMBARI_SERVER_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug
 }
