@@ -66,13 +66,11 @@ So grab a cup coffee, and after about 10 minutes, you have a ready HDP 2.1 clust
 
 ## Multi-node Hadoop cluster
 
-For the multi node Hadoop cluster instructions please read oru [blog](http://blog.sequenceiq.com/blog/2014/06/19/multinode-hadoop-cluster-on-docker/) entry or run this one-liner:
+For the multi node Hadoop cluster instructions please read our [blog](http://blog.sequenceiq.com/blog/2014/06/19/multinode-hadoop-cluster-on-docker/) entry or run this one-liner:
 
 ```
 curl -Lo .amb j.mp/docker-ambari && . .amb && amb-deploy-cluster
 ```
 
-This documents described a pseudo distributed ambari cluster. Stay tuned for the
-real cluster ...
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/cf81b5b79a6a27e8b10daf467c576d87 "githalytics.com")](http://githalytics.com/sequenceiq/docker-ambari)
