@@ -7,11 +7,11 @@ to have an ambari server:
 - start a virtual instance on your dev box
 
 Amazon is getting cheaper and cheaper, so its absolutely reasonable to spend the
-price of a cappuccino to try ambari on ec2. But sometimes you want it for 'free'
-or for whatever reason you don't want to use aws.
+price of a cappuccino to try ambari on EC22. But sometimes you want it for 'free'
+or for whatever reason you don't want to use AWS.
 
-You could go than for a virtual instance, and the use `virtualbox` or 'vmware',
-but docker has some benefits:
+You could go than for a virtual instance, and the use `virtualbox` or `vmware`,
+but Docker has some benefits:
 
 - starting containers under a second
 - taking snapshots, its freaking quick (its just settinga label)
@@ -19,7 +19,7 @@ but docker has some benefits:
 - memory management is easier, as docker is using the same memory as the hosts,
   while for several virtual instances, you have to declare memory limits one by one
 
-## Install docker
+## Install Docker
 
 Follow the description at the docker [getting started](https://www.docker.io/gettingstarted/#h_installation)
 
