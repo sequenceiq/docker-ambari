@@ -86,7 +86,7 @@ _amb_run_shell() {
   COMMAND=$1
   : ${COMMAND:? required}
   get-ambari-server-ip
-  NODES=$(docker inspect --format="{{.Config.Image}}" $(docker ps -q)|grep $IMAGE|wc -l|xargs)
+  NODES=$(docker inspect --format="{{.Config.Image}} {{.Name}}" $(docker ps -q)|grep $IMAGE|grep $NODE_PREFIX|wc -l|xargs)
   run-command docker run -it --rm -e EXPECTED_HOST_COUNT=$NODES -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver --entrypoint /bin/sh $IMAGE -c $COMMAND
 }
 
