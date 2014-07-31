@@ -1,5 +1,5 @@
 # Creates an Ambari Server base on vanilla centos
-FROM sequenceiq/dnsmasq
+FROM sequenceiq/dnsmasq:pam-fix
 MAINTAINER SequenceIQ
 
 ADD hdp.repo /etc/yum.repos.d/
