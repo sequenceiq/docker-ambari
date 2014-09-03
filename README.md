@@ -29,7 +29,7 @@ http://docs.docker.io/en/latest/installation/mac/#forwarding-vm-port-range-to-ho
 ## Starting the container
 
 This will start (and download if you never used it before) an image based on
-centos-6 with preinstalled ambari 1.5.1 ready to install HDP 2.1.
+centos-6 with preinstalled ambari 1.6.1 ready to install HDP 2.1.
 
 ```
 docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari --tag ambari-server=true
@@ -71,6 +71,8 @@ For the multi node Hadoop cluster instructions please read our [blog](http://blo
 ```
 curl -Lo .amb j.mp/docker-ambari && . .amb && amb-deploy-cluster
 ```
+
+_Note: there is a 1.7.0 Ambari preview available in the v1.7.0-trunk branch._
 
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/cf81b5b79a6a27e8b10daf467c576d87 "githalytics.com")](http://githalytics.com/sequenceiq/docker-ambari)
