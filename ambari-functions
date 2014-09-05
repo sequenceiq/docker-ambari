@@ -1,7 +1,7 @@
 :<<USAGE
-########################################
-curl -Lo .amb j.mp/docker-ambari-1-7 && . .amb
-########################################
+#################################################
+curl -Lo .amb j.mp/docker-ambari-1-7-ea && . .amb
+#################################################
 
 full documentation: https://github.com/sequenceiq/docker-ambari
 USAGE
