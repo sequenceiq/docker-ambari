@@ -33,6 +33,11 @@ WORKDIR /tmp
 # fixing pgsql issue
 RUN rm -rf /tmp/.s.PGSQL.5432.*
 
+RUN mkdir /var/log/hadoop-yarn/metrics && chmod 775 /var/log/hadoop-yarn/metrics && chown yarn:hadoop /var/log/hadoop-yarn/metrics
+ADD hadoop-metrics2.properties.j2 /var/lib/ambari-server/resources/stacks/HDP/2.0.6/hooks/before-START/templates/hadoop-metrics2.properties.j2
+
+VOLUME /var/log
+
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
 CMD ["--log-level", "debug"]
