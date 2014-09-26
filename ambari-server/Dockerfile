@@ -33,8 +33,10 @@ WORKDIR /tmp
 # fixing pgsql issue
 RUN rm -rf /tmp/.s.PGSQL.5432.*
 
-ADD hostname.sh /etc/ambari-agent/conf/hostname.sh
-RUN sed -i "/\[agent\]/ a public_hostname_script=\/etc\/ambari-agent\/conf\/hostname.sh" /etc/ambari-agent/conf/ambari-agent.ini
+ADD public-hostname.sh /etc/ambari-agent/conf/public-hostname.sh
+ADD internal-hostname.sh /etc/ambari-agent/conf/internal-hostname.sh
+RUN sed -i "/\[agent\]/ a public_hostname_script=\/etc\/ambari-agent\/conf\/public-hostname.sh" /etc/ambari-agent/conf/ambari-agent.ini
+RUN sed -i "/\[agent\]/ a hostname_script=\/etc\/ambari-agent\/conf\/internal-hostname.sh" /etc/ambari-agent/conf/ambari-agent.ini
 
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
