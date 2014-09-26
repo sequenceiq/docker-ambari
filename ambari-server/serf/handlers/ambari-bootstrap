@@ -34,7 +34,7 @@ fi
 if [[ "$SERF_TAG_AMBARI_AGENT" == "true" ]];then
   if grep 'ambari-server=true' $EVENT_LOG &> /dev/null; then
     AMBARI_SERVER=$(grep 'ambari-server=true' $EVENT_LOG|cut -f 1)
-    run-command-unless-dry-run sed -i.bak "/^hostname/ s/.*/hostname=${AMBARI_SERVER}/" /etc/ambari-agent/conf/ambari-agent.ini
+    run-command-unless-dry-run sed -i.bak "/^hostname=/ s/.*/hostname=${AMBARI_SERVER}/" /etc/ambari-agent/conf/ambari-agent.ini
     run-command-unless-dry-run ambari-agent start
   fi
 fi
