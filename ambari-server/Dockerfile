@@ -41,6 +41,9 @@ RUN sed -i "/\[agent\]/ a hostname_script=\/etc\/ambari-agent\/conf\/internal-ho
 RUN mkdir /var/log/hadoop-yarn/metrics && chmod 775 /var/log/hadoop-yarn/metrics && chown yarn:hadoop /var/log/hadoop-yarn/metrics
 ADD hadoop-metrics2.properties.j2 /var/lib/ambari-server/resources/stacks/HDP/2.0.6/hooks/before-START/templates/hadoop-metrics2.properties.j2
 
+# Error: database disk image is malformed
+ADD 00_dbclean.sh /usr/local/init/00_dbclean.sh
+
 VOLUME /var/log
 
 EXPOSE 8080
