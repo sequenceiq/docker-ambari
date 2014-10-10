@@ -2,7 +2,6 @@
 FROM sequenceiq/dnsmasq:pam-fix
 MAINTAINER SequenceIQ
 
-ADD hdp.repo /etc/yum.repos.d/
 ADD ambari.repo /etc/yum.repos.d/
 RUN yum install -y ambari-server ambari-agent
 RUN yum install -y tar git curl
@@ -19,7 +18,8 @@ RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/insta
 RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 
 # warm up the image
-RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper
+#ADD hdp.repo /etc/yum.repos.d/hdp.repo
+#RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper
 
 # add ambari shell to the image so new users don't need the 1GB java image
 RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.4/ambari-shell-0.1.4.jar
@@ -38,11 +38,11 @@ ADD internal-hostname.sh /etc/ambari-agent/conf/internal-hostname.sh
 RUN sed -i "/\[agent\]/ a public_hostname_script=\/etc\/ambari-agent\/conf\/public-hostname.sh" /etc/ambari-agent/conf/ambari-agent.ini
 RUN sed -i "/\[agent\]/ a hostname_script=\/etc\/ambari-agent\/conf\/internal-hostname.sh" /etc/ambari-agent/conf/ambari-agent.ini
 
-RUN mkdir /var/log/hadoop-yarn/metrics && chmod 775 /var/log/hadoop-yarn/metrics && chown yarn:hadoop /var/log/hadoop-yarn/metrics
+RUN mkdir /var/log/hadoop-metrics && chmod 777 /var/log/hadoop-metrics
 ADD hadoop-metrics2.properties.j2 /var/lib/ambari-server/resources/stacks/HDP/2.0.6/hooks/before-START/templates/hadoop-metrics2.properties.j2
 
 # Error: database disk image is malformed
-ADD 00_dbclean.sh /usr/local/init/00_dbclean.sh
+#ADD 00_dbclean.sh /usr/local/init/00_dbclean.sh
 
 VOLUME /var/log
 
