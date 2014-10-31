@@ -1,9 +1,0 @@
-{
-  "event_handlers": [
-    "member-join=/usr/local/serf/handlers/ambari-bootstrap"
-  ],
-
-  "tags" : {
-    "ambari-agent": "true"
-  }
-}
