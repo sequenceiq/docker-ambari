@@ -2,7 +2,9 @@
 FROM centos:centos6
 MAINTAINER SequenceIQ
 
-ADD ambari.repo /etc/yum.repos.d/
+COPY ambari.repo /etc/yum.repos.d/
+COPY hdp.repo /etc/yum.repos.d/
+
 RUN yum install -y ambari-server ambari-agent
 RUN yum install -y tar git curl
 RUN ambari-server setup --silent
