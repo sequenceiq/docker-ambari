@@ -47,6 +47,8 @@ main() {
   fix-hostname-scripts
   set-server-ip
   ambari-agent start -v
+  sleep 3
+  tail -f /var/log/ambari-agent/ambari-agent.log
 }
 
 main "$@"
