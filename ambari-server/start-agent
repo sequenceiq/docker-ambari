@@ -9,10 +9,10 @@ debug() {
 fix-hostname-scripts() {
   cd /etc/ambari-agent/conf/
 
-cat >consul.sh<<EOF
+cat >consul.sh<<"EOF"
 #!/bin/bash
 publ=$(curl -s -m 5 http://169.254.169.254/latest/meta-data/local-hostname)
-echo ${publ%%.*}.node.consul'
+echo "${publ%%.*}.node.consul"
 EOF
   chmod +x consul.sh
 
