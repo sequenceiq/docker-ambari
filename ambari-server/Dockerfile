@@ -36,7 +36,7 @@ ADD hadoop-metrics2.properties.j2 /var/lib/ambari-server/resources/stacks/HDP/2.
 #ADD 00_dbclean.sh /usr/local/init/00_dbclean.sh
 RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper
 
-ADD ambari-agent /ambari-agent
+ADD start-agent /start-agent
 
 VOLUME /var/log
 

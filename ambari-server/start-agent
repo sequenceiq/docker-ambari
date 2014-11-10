@@ -1,4 +1,10 @@
-`#!/bin/bash
+#!/bin/bash
+
+[[ "TRACE" ]] && set -x
+
+debug() {
+  [[ "DEBUG" ]]  && echo "[DEBUG] $@" 1>&2
+}
 
 fix-hostname-scripts() {
   cd /etc/ambari-agent/conf/
@@ -22,8 +28,12 @@ EOF
 # here comes the tempfile workaround ...
 fix-nameserver() {
   local tmp=/tmp/resolv.con
-  sed  "/nameserver/ i\nameserver 172.17.42.1" /etc/resolv.conf > $tmp
-  cat $tmp > /etc/resolv.conf
+  if grep -q 172.17.42.1 /etc/resolv.conf ;then
+    debug [OK] /etc/resolv.conf
+  else
+    sed  "/nameserver/ i\nameserver 172.17.42.1" /etc/resolv.conf > $tmp \
+    cat $tmp > /etc/resolv.conf
+  fi
 }
 
 set-server-ip() {
@@ -40,4 +50,3 @@ main() {
 }
 
 main "$@"
-`
