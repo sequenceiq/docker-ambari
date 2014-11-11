@@ -31,7 +31,7 @@ fix-nameserver() {
   if grep -q 172.17.42.1 /etc/resolv.conf ;then
     debug [OK] /etc/resolv.conf
   else
-    sed  "/nameserver/ i\nameserver 172.17.42.1" /etc/resolv.conf > $tmp \
+    sed  "/nameserver/ i\nameserver 172.17.42.1" /etc/resolv.conf > $tmp
     cat $tmp > /etc/resolv.conf
   fi
 }
