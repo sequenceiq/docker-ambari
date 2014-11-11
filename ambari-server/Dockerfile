@@ -37,6 +37,12 @@ ADD hadoop-metrics2.properties.j2 /var/lib/ambari-server/resources/stacks/HDP/2.
 RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper
 
 RUN yum install -y bind-utils
+
+# instead of starting the docker file FROM sequenceiq/ssh:
+RUN yum install -y curl
+RUN curl -L https://api.github.com/repos/sequenceiq/docker-ssh/tarball/master|tar -xz -C /usr/local/serf --strip-components=2 --touch \*/serf
+RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/install-ssh.sh | bash
+
 ADD start-agent /start-agent
 ADD start-server /start-server
 
