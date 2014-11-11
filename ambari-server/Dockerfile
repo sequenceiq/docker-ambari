@@ -1,5 +1,5 @@
 # Creates an Ambari Server base on vanilla centos
-FROM centos:centos6
+FROM sequenceiq/pam:centos-6.5
 MAINTAINER SequenceIQ
 
 COPY ambari.repo /etc/yum.repos.d/
