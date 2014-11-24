@@ -36,9 +36,16 @@ fix-nameserver() {
   fi
 }
 
+dig_ambari() {
+  dig @172.17.42.1 ambari-8080.service.consul +short
+}
+
 set-server-ip() {
-  ambari_ip=$(dig @172.17.42.1 ambari-8080.service.consul +short)
-  sed -i "s/^hostname=.*/hostname=${ambari_ip}/" \
+  while [ -z "$(dig_ambari)" ]; do
+    sleep 1
+    echo -n .
+  done
+  sed -i "s/^hostname=.*/hostname=$(dig_ambari)/" \
     /etc/ambari-agent/conf/ambari-agent.ini
 }
 
