@@ -26,15 +26,15 @@ EOF
 # sed -i /etc/resolf.conf fails:
 # sed: cannot rename /etc/sedU9oCRy: Device or resource busy
 # here comes the tempfile workaround ...
-fix-nameserver() {
-  local tmp=/tmp/resolv.con
-  if grep -q 172.17.42.1 /etc/resolv.conf ;then
-    debug [OK] /etc/resolv.conf
-  else
-    sed  "/nameserver/ i\nameserver 172.17.42.1" /etc/resolv.conf > $tmp
-    cat $tmp > /etc/resolv.conf
-  fi
-}
+fix-nameserver() { 
+  local tmp=/tmp/resolv.con 
+  if grep -q 172.17.42.1 /etc/resolv.conf ;then 
+    debug [OK] /etc/resolv.conf 
+  else 
+    sed  "/search/ s/.*/search service.consul node.consul/; /nameserver/ i\nameserver 172.17.42.1" /etc/resolv.conf > $tmp  
+    cat $tmp > /etc/resolv.conf 
+  fi 
+} 
 
 dig_ambari() {
   dig @172.17.42.1 ambari-8080.service.consul +short
