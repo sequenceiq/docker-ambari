@@ -23,8 +23,10 @@ fix-nameserver() {
 main() {
   fix-nameserver
   ambari-server start
-  sleep 3
-  tail -f /var/log/ambari-server/ambari-server.log
+  while true; do
+    sleep 3
+    tail -f /var/log/ambari-server/ambari-server.log
+  done
 }
 
 main "$@"
