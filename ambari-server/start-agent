@@ -55,8 +55,10 @@ main() {
   set-server-ip
   ambari-agent start -v
   /etc/init.d/sshd start
-  sleep 3
-  tail -f /var/log/ambari-agent/ambari-agent.log
+  while true; do
+    sleep 3
+    tail -f /var/log/ambari-server/ambari-server.log
+  done
 }
 
 main "$@"
