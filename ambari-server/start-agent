@@ -6,35 +6,19 @@ debug() {
   [[ "DEBUG" ]]  && echo "[DEBUG] $@" 1>&2
 }
 
-fix-hostname-scripts() {
-  cd /etc/ambari-agent/conf/
-
-cat >consul.sh<<"EOF"
-#!/bin/bash
-publ=$(curl -s -m 5 http://169.254.169.254/latest/meta-data/local-hostname)
-echo "${publ%%.*}.node.consul"
-EOF
-  chmod +x consul.sh
-
-  mv internal-hostname.sh _internal-hostname.sh
-  mv public-hostname.sh _public-hostname.sh
-  ln -s consul.sh public-hostname.sh
-  ln -s consul.sh internal-hostname.sh
-}
-
 # --dns isn't available for: docker run --net=host
 # sed -i /etc/resolf.conf fails:
 # sed: cannot rename /etc/sedU9oCRy: Device or resource busy
 # here comes the tempfile workaround ...
-fix-nameserver() { 
-  local tmp=/tmp/resolv.con 
-  if grep -q 172.17.42.1 /etc/resolv.conf ;then 
-    debug [OK] /etc/resolv.conf 
-  else 
-    sed  "/search/ s/.*/search service.consul node.consul/; /nameserver/ i\nameserver 172.17.42.1" /etc/resolv.conf > $tmp  
-    cat $tmp > /etc/resolv.conf 
-  fi 
-} 
+fix-nameserver() {
+  local tmp=/tmp/resolv.con
+  if grep -q 172.17.42.1 /etc/resolv.conf ;then
+    debug [OK] /etc/resolv.conf
+  else
+    sed  "/search/ s/.*/search service.consul node.consul/; /nameserver/ i\nameserver 172.17.42.1" /etc/resolv.conf > $tmp
+    cat $tmp > /etc/resolv.conf
+  fi
+}
 
 dig_ambari() {
   dig @172.17.42.1 ambari-8080.service.consul +short
@@ -51,7 +35,6 @@ set-server-ip() {
 
 main() {
   fix-nameserver
-  fix-hostname-scripts
   set-server-ip
   ambari-agent start -v
   /etc/init.d/sshd start
