@@ -19,9 +19,16 @@ search service.consul node.consul
 EOF
 }
 
+start_ambari() {
+  while [ -z "$(netstat -na | grep 8080)" ]; do
+    ambari-server start
+    sleep 30
+  done
+}
+
 main() {
   fix-nameserver
-  ambari-server start
+  start_ambari
   while true; do
     sleep 3
     tail -f /var/log/ambari-server/ambari-server.log
