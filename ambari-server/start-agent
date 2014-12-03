@@ -1,6 +1,7 @@
 #!/bin/bash
 
 : ${BRIDGE_IP:="172.17.42.1"}
+: ${CONSUL_HTTP_ADDR:="127.0.0.1:8500"}
 
 [[ "TRACE" ]] && set -x
 
