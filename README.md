@@ -29,7 +29,7 @@ http://docs.docker.io/en/latest/installation/mac/#forwarding-vm-port-range-to-ho
 ## Starting the container
 
 This will start (and download if you never used it before) an image based on
-centos-6 with preinstalled ambari 1.6.1 ready to install HDP 2.1.
+centos-6 with preinstalled Ambari 1.7.0 ready to install HDP 2.2.
 
 ```
 docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari --tag ambari-server=true
@@ -62,7 +62,7 @@ and 1 more json for cluster creation, where you specify which hosts go
 to which hostgroup.
 
 Ambari shell will show the progress in the upper right corner.
-So grab a cup coffee, and after about 10 minutes, you have a ready HDP 2.1 cluster.
+So grab a cup coffee, and after about 10 minutes, you have a ready HDP 2.2 cluster.
 
 ## Multi-node Hadoop cluster
 
