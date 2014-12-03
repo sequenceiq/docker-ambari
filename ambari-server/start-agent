@@ -33,7 +33,9 @@ set-server-ip() {
 }
 
 start-watch() {
-  consul watch --type=event /consul-event-handler.sh 2> /dev/null &
+  if [ -n "$CONSUL_HTTP_ADDR" ]; then
+    consul watch --http-addr=$CONSUL_HTTP_ADDR --type=event /consul-event-handler.sh 2> /dev/null &
+  fi
 }
 
 main() {

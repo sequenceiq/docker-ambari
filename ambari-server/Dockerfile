@@ -20,7 +20,6 @@ COPY ambari-shell.sh /tmp/
 ENV JAVA_HOME /usr/jdk64/jdk1.7.0_45
 ENV PATH $PATH:$JAVA_HOME/bin
 ENV PLUGIN_PATH /plugins
-ENV CONSUL_WATCH false
 WORKDIR /tmp
 
 # fixing pgsql issue
