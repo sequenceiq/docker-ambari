@@ -20,6 +20,7 @@ COPY ambari-shell.sh /tmp/
 ENV JAVA_HOME /usr/jdk64/jdk1.7.0_45
 ENV PATH $PATH:$JAVA_HOME/bin
 ENV PLUGIN_PATH /plugins
+ENV CONSUL_WATCH false
 WORKDIR /tmp
 
 # fixing pgsql issue
@@ -59,6 +60,8 @@ RUN curl -Lk https://s3-eu-west-1.amazonaws.com/sequenceiq/plugn.tar.gz | tar -z
 RUN plugn init
 RUN plugn install https://github.com/sequenceiq/consul-plugins-install.git install
 RUN plugn enable install
+
+COPY consul-event-handler.sh /consul-event-handler.sh
 
 VOLUME /var/log
 
