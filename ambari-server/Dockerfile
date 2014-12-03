@@ -46,6 +46,9 @@ ADD hadoop-metrics2.properties.j2 /var/lib/ambari-server/resources/stacks/HDP/2.
 
 VOLUME /var/log
 
+# increase agent timeout
+RUN sed -i "s/agent.task.timeout=900/agent.task.timeout=2000/" /etc/ambari-server/conf/ambari.properties
+
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
 CMD ["--log-level", "debug"]
