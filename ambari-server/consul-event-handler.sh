@@ -1,5 +1,8 @@
 #!/bin/bash
 
+: ${BRIDGE_IP:=127.0.0.1}
+: ${CONSUL_HTTP_PORT:=8500}
+
 get_field() {
   declare json="$1"
   declare field="$2"
@@ -21,12 +24,13 @@ process_json() {
       EVENT_LTIME=$ltime \
       EVENT_VERSION=$version \
       plugn trigger $event
+    curl -X PUT -d 'OK' "http://$BRIDGE_IP:$CONSUL_HTTP_PORT/v1/kv/events/$id/$(hostname -f)"
   done
 }
 
 main() {
-  while read array ;do 
-    echo $array | jq .[] -c | process_json 
+  while read array ;do
+    echo $array | jq .[] -c | process_json
   done
 }
 
