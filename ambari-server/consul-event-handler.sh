@@ -19,12 +19,14 @@ process_json() {
     payload=$(get_field $json Payload)
     ltime=$(get_field $json LTime)
     version=$(get_field $json Version)
+
+    curl -X PUT -d 'ACCEPTED' "http://$BRIDGE_IP:$CONSUL_HTTP_PORT/v1/kv/events/$id/$(hostname -f)"
     echo $payload | base64 -d | \
       EVENT_ID=$id \
       EVENT_LTIME=$ltime \
       EVENT_VERSION=$version \
-      plugn trigger $event
-    curl -X PUT -d 'OK' "http://$BRIDGE_IP:$CONSUL_HTTP_PORT/v1/kv/events/$id/$(hostname -f)"
+    plugn trigger $event
+    curl -X PUT -d 'FINISHED' "http://$BRIDGE_IP:$CONSUL_HTTP_PORT/v1/kv/events/$id/$(hostname -f)"
   done
 }
 
