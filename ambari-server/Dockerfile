@@ -1,21 +1,19 @@
 # Creates an Ambari Server base on vanilla centos
-FROM sequenceiq/dnsmasq:pam-fix
+FROM sequenceiq/pam:centos-6.5
 MAINTAINER SequenceIQ
 
 ADD ambari.repo /etc/yum.repos.d/
+ADD hdp.repo /etc/yum.repos.d/
+
 RUN yum install -y ambari-server ambari-agent
-RUN yum install -y tar git curl
+RUN yum install -y tar git curl bind-utils
 RUN ambari-server setup --silent
-
-ADD serf /usr/local/serf
-
-# instead of starting the docker file FROM sequenceiq/ssh:
-RUN yum install -y curl
-RUN curl -L https://api.github.com/repos/sequenceiq/docker-ssh/tarball/master|tar -xz -C /usr/local/serf --strip-components=2 --touch \*/serf
-RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/install-ssh.sh | bash
 
 # fix annoying PAM error 'couldnt open session'
 RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
+
+RUN curl -L https://api.github.com/repos/sequenceiq/docker-ssh/tarball/master|tar -xz -C /usr/local/serf --strip-components=2 --touch \*/serf
+RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/install-ssh.sh | bash
 
 # warm up the image
 ADD hdp.repo /etc/yum.repos.d/hdp.repo
@@ -31,6 +29,7 @@ ADD wait-for-host-number.sh /tmp/
 ADD ambari-shell.sh /tmp/
 ENV JAVA_HOME /usr/jdk64/jdk1.7.0_67
 ENV PATH $PATH:$JAVA_HOME/bin
+ENV PLUGIN_PATH /plugins
 WORKDIR /tmp
 
 # fixing pgsql issue
@@ -44,8 +43,30 @@ RUN sed -i "/\[agent\]/ a hostname_script=\/etc\/ambari-agent\/conf\/internal-ho
 RUN mkdir /var/log/hadoop-metrics && chmod 777 /var/log/hadoop-metrics
 ADD hadoop-metrics2.properties.j2 /var/lib/ambari-server/resources/stacks/HDP/2.0.6/hooks/before-START/templates/hadoop-metrics2.properties.j2
 
-# Error: database disk image is malformed
-#ADD 00_dbclean.sh /usr/local/init/00_dbclean.sh
+# SSH
+RUN yum install -y openssh-server openssh-clients \
+  && ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key \
+  && ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key \
+  && ssh-keygen -q -N "" -t rsa -f /root/.ssh/id_rsa \
+  && cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys \
+  && sed  -i "/^[^#]*UsePAM/ s/.*/#&/"  /etc/ssh/sshd_config \
+  && echo "UsePAM no" >> /etc/ssh/sshd_config
+
+
+COPY start-agent /start-agent
+COPY start-server /start-server
+
+# download consul, plugn and jq binaries
+RUN curl -Lko /tmp/consul.zip https://dl.bintray.com/mitchellh/consul/0.4.1_linux_amd64.zip && unzip -d /bin /tmp/consul.zip && rm /tmp/consul.zip
+RUN curl -Lk https://s3-eu-west-1.amazonaws.com/sequenceiq/plugn.tar.gz | tar -zxv -C /bin
+RUN curl -o /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq && chmod +x /usr/bin/jq
+
+# initialize a new plugn path and install default plugins
+RUN plugn init
+RUN plugn install https://github.com/sequenceiq/consul-plugins-install.git install
+RUN plugn enable install
+
+COPY consul-event-handler.sh /consul-event-handler.sh
 
 VOLUME /var/log
 

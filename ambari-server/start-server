@@ -1,0 +1,38 @@
+#!/bin/bash
+
+: ${BRIDGE_IP:="172.17.42.1"}
+
+[[ "TRACE" ]] && set -x
+
+debug() {
+  [[ "DEBUG" ]]  && echo "[DEBUG] $@" 1>&2
+}
+
+# --dns isn't available for: docker run --net=host
+# sed -i /etc/resolf.conf fails:
+# sed: cannot rename /etc/sedU9oCRy: Device or resource busy
+# here comes the tempfile workaround ...
+fix-nameserver() {
+  cat>/etc/resolv.conf<<EOF
+nameserver $BRIDGE_IP
+search service.consul node.consul
+EOF
+}
+
+start_ambari() {
+  while [ -z "$(netstat -na | grep 8080)" ]; do
+    ambari-server start
+    sleep 30
+  done
+}
+
+main() {
+  fix-nameserver
+  start_ambari
+  while true; do
+    sleep 3
+    tail -f /var/log/ambari-server/ambari-server.log
+  done
+}
+
+main "$@"
