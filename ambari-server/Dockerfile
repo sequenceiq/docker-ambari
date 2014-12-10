@@ -12,7 +12,6 @@ RUN ambari-server setup --silent
 # fix annoying PAM error 'couldnt open session'
 RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 
-RUN curl -L https://api.github.com/repos/sequenceiq/docker-ssh/tarball/master|tar -xz -C /usr/local/serf --strip-components=2 --touch \*/serf
 RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/install-ssh.sh | bash
 
 # warm up the image
@@ -74,5 +73,4 @@ VOLUME /var/log
 RUN sed -i "s/agent.task.timeout=900/agent.task.timeout=2000/" /etc/ambari-server/conf/ambari.properties
 
 EXPOSE 8080
-ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
-CMD ["--log-level", "debug"]
+CMD ["/start-server"]
