@@ -44,6 +44,7 @@ ADD hadoop-metrics2.properties.j2 /var/lib/ambari-server/resources/stacks/HDP/2.
 
 # SSH
 RUN yum install -y openssh-server openssh-clients \
+  && rm /etc/ssh/ssh_host_rsa_key  && rm /etc/ssh/ssh_host_dsa_key && rm /root/.ssh/id_rsa \
   && ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key \
   && ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key \
   && ssh-keygen -q -N "" -t rsa -f /root/.ssh/id_rsa \
