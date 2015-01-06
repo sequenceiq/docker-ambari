@@ -3,7 +3,6 @@ FROM sequenceiq/pam:centos-6.5
 MAINTAINER SequenceIQ
 
 ADD ambari.repo /etc/yum.repos.d/
-ADD hdp.repo /etc/yum.repos.d/
 
 RUN yum install -y ambari-server ambari-agent
 RUN yum install -y tar git curl bind-utils
