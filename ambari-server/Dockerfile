@@ -14,11 +14,9 @@ RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/install-ssh.sh | bash
 
 # warm up the image
-#ADD hdp.repo /etc/yum.repos.d/hdp.repo
-#RUN yum -d 0 -e 0 -y install hadoop_2_2_*
-#RUN yum -d 0 -e 0 -y install hadoop_2_2_*-yarn
-#RUN yum -d 0 -e 0 -y install slider_2_2_*
-#RUN yum -d 0 -e 0 -y install storm_2_2_*
+ADD HDP.repo /etc/yum.repos.d/
+ADD download-warmup-deps.sh /tmp/
+RUN /tmp/download-warmup-deps.sh
 
 # add ambari shell to the image so new users don't need the 1GB java image
 RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.15/ambari-shell-0.1.15.jar
