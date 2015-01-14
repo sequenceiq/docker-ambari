@@ -34,7 +34,7 @@ set-server-ip() {
 }
 
 start-watch() {
-  consul watch --http-addr=$BRIDGE_IP:$CONSUL_HTTP_PORT --type=event /consul-event-handler.sh 2> /tmp/consul_handler.log &
+  consul watch --http-addr=$BRIDGE_IP:$CONSUL_HTTP_PORT --type=event /consul-event-handler.sh 2> /tmp/consul_handler_errors.log &
 }
 
 main() {
