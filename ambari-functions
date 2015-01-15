@@ -111,7 +111,7 @@ amb-deploy-cluster() {
 }
 
 amb-start-first() {
-  run-command docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
+  run-command docker run -d $DOCKER_OPTS -p 8080 --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
 }
 
 amb-copy-to-hdfs() {
