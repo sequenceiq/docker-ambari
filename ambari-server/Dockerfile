@@ -22,7 +22,7 @@ RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 #RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper
 
 # add ambari shell to the image so new users don't need the 1GB java image
-RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.15/ambari-shell-0.1.15.jar
+RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.23/ambari-shell-0.1.23.jar
 ADD install-cluster.sh /tmp/
 ADD wait-for-host-number.sh /tmp/
 ADD ambari-shell.sh /tmp/
