@@ -20,7 +20,7 @@ EOF
 }
 
 start_ambari() {
-  while [ -z "$(netstat -na | grep 8080)" ]; do
+  while [ -z "$(netstat -tulpn | grep 8080)" ]; do
     ambari-server start
     sleep 30
   done
