@@ -31,6 +31,10 @@ WORKDIR /tmp
 # fixing pgsql issue
 RUN rm -rf /tmp/.s.PGSQL.5432.*
 
+# add a custom folder to the hadoop classpath
+RUN mkdir -p /usr/lib/hadoop/lib
+ENV HADOOP_CLASSPATH /usr/lib/hadoop/lib/*
+
 ADD public-hostname.sh /etc/ambari-agent/conf/public-hostname.sh
 ADD internal-hostname.sh /etc/ambari-agent/conf/internal-hostname.sh
 RUN sed -i "/\[agent\]/ a public_hostname_script=\/etc\/ambari-agent\/conf\/public-hostname.sh" /etc/ambari-agent/conf/ambari-agent.ini
