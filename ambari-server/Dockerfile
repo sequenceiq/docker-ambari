@@ -1,4 +1,6 @@
 # Creates an Ambari Server base on vanilla centos
+# docker build -t sequenceiq/ambari:1.7.0 ./ambari-server/
+
 FROM sequenceiq/dnsmasq:pam-fix
 MAINTAINER SequenceIQ
 
@@ -18,8 +20,10 @@ RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/insta
 RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 
 # warm up the image
-#ADD hdp.repo /etc/yum.repos.d/hdp.repo
-#RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper
+ADD HDP.repo /etc/yum.repos.d/
+ADD download-warmup-deps.sh /tmp/
+RUN chmod +x  /tmp/download-warmup-deps.sh
+RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper hbase
 
 # add ambari shell to the image so new users don't need the 1GB java image
 RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.23/ambari-shell-0.1.23.jar
