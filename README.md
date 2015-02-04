@@ -1,4 +1,4 @@
-# Ambari on docker
+# Ambari on Docker
 
 This projects aim is to help you to get started with ambari. The 2 easiest way
 to have an ambari server:
@@ -71,7 +71,3 @@ For the multi node Hadoop cluster instructions please read our [blog](http://blo
 ```
 curl -Lo .amb j.mp/docker-ambari && . .amb && amb-deploy-cluster
 ```
-
-_Note: there is a 1.7.0 Ambari early access in the v1.7.0-ea branch. if you are interested in a particular Ambari version, always check for the appropriate branch._
-
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/cf81b5b79a6a27e8b10daf467c576d87 "githalytics.com")](http://githalytics.com/sequenceiq/docker-ambari)
