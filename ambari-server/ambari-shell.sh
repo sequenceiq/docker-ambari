@@ -7,4 +7,5 @@ echo AMBARI_HOST=${AMBARI_HOST:? ambari server address is mandatory, fallback is
 
 ./wait-for-host-number.sh
 
+export PATH=/usr/jdk64/jdk1.7.0_67/bin:$PATH
 java -jar ambari-shell.jar --ambari.host=$AMBARI_HOST
