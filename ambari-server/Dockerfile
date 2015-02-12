@@ -26,6 +26,7 @@ RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 ADD hdp.repo /etc/yum.repos.d/
 ADD download-warmup-deps.sh /tmp/
 RUN chmod +x  /tmp/download-warmup-deps.sh
+RUN /tmp/download-warmup-deps.sh
 RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper hbase
 
 # add ambari shell to the image so new users don't need the 1GB java image
