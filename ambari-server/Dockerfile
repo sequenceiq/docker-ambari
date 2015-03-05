@@ -1,8 +1,8 @@
 # Creates an Ambari Server base on vanilla centos
 # To build the image use:
 #
-# git checkout 1.7.0
-# docker build -t sequenceiq/ambari:1.7.0 ./ambari-server/
+# git checkout 2.0.0
+# docker build -t sequenceiq/ambari:2.0.0 ./ambari-server/
 
 FROM sequenceiq/dnsmasq:pam-fix
 MAINTAINER SequenceIQ
@@ -30,7 +30,7 @@ RUN /tmp/download-warmup-deps.sh
 RUN yum install -y ambari-log4j hadoop hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-mapreduce-historyserver hadoop-yarn hadoop-yarn-nodemanager hadoop-yarn-proxyserver hadoop-yarn-resourcemanager lzo net-snmp net-snmp-utils snappy snappy-devel unzip zookeeper hbase
 
 # add ambari shell to the image so new users don't need the 1GB java image
-RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.24/ambari-shell-0.1.24.jar
+RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.25/ambari-shell-0.1.25.jar
 ADD install-cluster.sh /tmp/
 ADD wait-for-host-number.sh /tmp/
 ADD ambari-shell.sh /tmp/
@@ -57,6 +57,6 @@ VOLUME /var/log
 # increase agent timeout
 RUN sed -i "s/agent.task.timeout=900/agent.task.timeout=2000/" /etc/ambari-server/conf/ambari.properties
 
-EXPOSE 8080
+EXPOSE 8042 8080 50075 50010 8020
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
 CMD ["--log-level", "debug"]
