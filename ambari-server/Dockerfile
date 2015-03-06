@@ -10,6 +10,7 @@ MAINTAINER SequenceIQ
 ADD ambari.repo /etc/yum.repos.d/
 RUN yum install -y ambari-server ambari-agent
 RUN yum install -y tar git curl
+
 RUN ambari-server setup --silent
 
 ADD serf /usr/local/serf
@@ -38,6 +39,9 @@ ENV JAVA_HOME /usr/jdk64/jdk1.7.0_67
 ENV PATH $PATH:$JAVA_HOME/bin
 WORKDIR /tmp
 
+# add HIVE view jar - before ambari-server setup
+RUN curl -o /var/lib/ambari-server/resources/views/hive-0.1.0-SNAPSHOT.jar https://s3-eu-west-1.amazonaws.com/sequenceiq/hive-0.1.0-20150306.030234-109.jar
+
 # fixing pgsql issue
 RUN rm -rf /tmp/.s.PGSQL.5432.*
 
@@ -57,6 +61,6 @@ VOLUME /var/log
 # increase agent timeout
 RUN sed -i "s/agent.task.timeout=900/agent.task.timeout=2000/" /etc/ambari-server/conf/ambari.properties
 
-EXPOSE 8042 8080 50075 50010 8020
+EXPOSE 8080
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
 CMD ["--log-level", "debug"]
