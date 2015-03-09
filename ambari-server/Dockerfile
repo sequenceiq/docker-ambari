@@ -1,8 +1,14 @@
-# Creates an Ambari Server base on vanilla centos
-# To build the image use:
+# Creates an Ambari Server based on vanilla CentOS
 #
+#To build the image use:
+#
+#git clone https://github.com/sequenceiq/docker-ambari.git
+#cd docker-ambari
 # git checkout 2.0.0
 # docker build -t sequenceiq/ambari:2.0.0 ./ambari-server/
+#
+#To build the image
+#docker pull sequenceiq/ambari:2.0.0
 
 FROM sequenceiq/dnsmasq:pam-fix
 MAINTAINER SequenceIQ
