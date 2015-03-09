@@ -19,7 +19,7 @@ ADD download-warmup-deps.sh /tmp/
 RUN /tmp/download-warmup-deps.sh
 
 # add ambari shell to the image so new users don't need the 1GB java image
-RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.15/ambari-shell-0.1.15.jar
+RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.25/ambari-shell-0.1.25.jar
 ADD install-cluster.sh /tmp/
 ADD wait-for-host-number.sh /tmp/
 ADD ambari-shell.sh /tmp/
@@ -27,6 +27,8 @@ ENV JAVA_HOME /usr/jdk64/jdk1.7.0_67
 ENV PATH $PATH:$JAVA_HOME/bin
 ENV PLUGIN_PATH /plugins
 WORKDIR /tmp
+
+RUN curl -o /var/lib/ambari-server/resources/views/hive-0.1.0-SNAPSHOT.jar https://s3-eu-west-1.amazonaws.com/sequenceiq/hive-0.1.0-20150306.030234-109.jar
 
 # fixing pgsql issue
 RUN rm -rf /tmp/.s.PGSQL.5432.*

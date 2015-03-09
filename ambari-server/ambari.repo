@@ -1,15 +1,7 @@
-[ambari-1.x]
-name=Ambari 1.x
-baseurl=http://public-repo-1.hortonworks.com/ambari/centos6/1.x/GA
+[AMBARI.2.0.0-2.x]
+name=Ambari 2.x
+baseurl= http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/2.x/latest/2.0.0/
 gpgcheck=1
-gpgkey=http://public-repo-1.hortonworks.com/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
-enabled=1
-priority=1
-
-[Updates-ambari-1.7.0]
-name=ambari-1.7.0 - Updates
-baseurl=http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.7.0
-gpgcheck=1
-gpgkey=http://public-repo-1.hortonworks.com/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+gpgkey= http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
 enabled=1
 priority=1
