@@ -18,6 +18,9 @@ ADD HDP.repo /etc/yum.repos.d/
 ADD download-warmup-deps.sh /tmp/
 RUN /tmp/download-warmup-deps.sh
 
+# kerberos client
+RUN yum install -y krb5-workstation 
+
 # add ambari shell to the image so new users don't need the 1GB java image
 RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.25/ambari-shell-0.1.25.jar
 ADD install-cluster.sh /tmp/
