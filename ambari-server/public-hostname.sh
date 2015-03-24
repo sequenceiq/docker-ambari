@@ -7,9 +7,10 @@ if [ -n "$GCC" ]; then
   exit 0
 fi
 
+AWS_STATUS=$(curl -s -m 5 -w "%{http_code}" http://169.254.169.254/latest/meta-data/public-hostname -o /dev/null)
 AWS=$(curl -s -m 5 http://169.254.169.254/latest/meta-data/public-hostname)
 
-if [ -n "$AWS" ]; then
+if [ "$AWS_STATUS" == "200" ] && [ -n "$AWS" ]; then
   echo $AWS
   exit 0
 fi
