@@ -25,7 +25,7 @@ dig_ambari() {
 }
 
 set-server-ip() {
-  while [ -z "$(dig_ambari)" ]; do
+  while ! dig_ambari &>/dev/null || [ -z "$(dig_ambari)" ]; do
     sleep 1
     echo -n .
   done
