@@ -81,9 +81,5 @@ VOLUME /var/log
 # increase agent timeout
 RUN sed -i "s/agent.task.timeout=900/agent.task.timeout=2000/" /etc/ambari-server/conf/ambari.properties
 
-# jce-6 Security for HBase
-ADD local_policy.jar $JAVA_HOME/jre/lib/security/local_policy.jar
-ADD US_export_policy.jar $JAVA_HOME/jre/lib/security/US_export_policy.jar
-
 EXPOSE 8080
 CMD ["/start-server"]
