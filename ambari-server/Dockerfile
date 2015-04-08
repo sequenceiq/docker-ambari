@@ -5,8 +5,12 @@ MAINTAINER SequenceIQ
 ADD ambari.repo /etc/yum.repos.d/
 
 RUN yum install -y ambari-server ambari-agent
-RUN yum install -y tar git curl bind-utils
+RUN yum install -y tar git curl bind-utils wget
 RUN ambari-server setup --silent
+
+RUN wget http://mirror.cc.columbia.edu/pub/software/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz && tar xzf apache-maven-3.0.5-bin.tar.gz -C /usr/local && cd /usr/local && ln -s apache-maven-3.0.5 maven
+ENV M2_HOME /usr/local/maven
+ENV PATH $PATH:$M2_HOME/bin
 
 # fix annoying PAM error 'couldnt open session'
 RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
@@ -64,6 +68,9 @@ COPY start-server /start-server
 
 # download jq binaries
 RUN curl -o /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq && chmod +x /usr/bin/jq
+
+RUN cd /var/lib/ambari-server/resources/stacks/HDP/2.2/services && git clone https://github.com/abajwa-hw/zeppelin-stack.git
+RUN cd /root && git clone https://github.com/NFLabs/zeppelin && cd zeppelin && sed -i "s/<id>hadoop-2.4<\/id>/<id>hadoop-2.6<\/id>/g" pom.xml && sed -i "s/<hadoop.version>2.4.0<\/hadoop.version>/<hadoop.version>2.6.0<\/hadoop.version>/g" pom.xml && sed -i "s/<jets3t.version>0.9.0<\/jets3t.version>/<jets3t.version>0.9.3<\/jets3t.version>\n\t\t\t\t<codehaus.jackson.version>1.9.13<\/codehaus.jackson.version>/g" pom.xml && mvn clean package -Phadoop-2.6 -Dhadoop.version=2.6.0 -Pspark-1.2 -Pyarn -DskipTests
 
 VOLUME /var/log
 
