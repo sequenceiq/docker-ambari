@@ -33,15 +33,10 @@ set-server-ip() {
     /etc/ambari-agent/conf/ambari-agent.ini
 }
 
-start-watch() {
-  consul watch --http-addr=$BRIDGE_IP:$CONSUL_HTTP_PORT --type=event /consul-event-handler.sh 2> /tmp/consul_handler_errors.log &
-}
-
 main() {
   fix-nameserver
   set-server-ip
   ambari-agent start -v
-  start-watch
   /etc/init.d/sshd start
   while true; do
     sleep 3
