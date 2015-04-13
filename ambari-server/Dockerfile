@@ -69,7 +69,7 @@ COPY start-server /start-server
 # download jq binaries
 RUN curl -o /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq && chmod +x /usr/bin/jq
 
-RUN cd /var/lib/ambari-server/resources/stacks/HDP/2.2/services && git clone https://github.com/abajwa-hw/zeppelin-stack.git && cd zeppelin-stack/package/scripts &&  sed -i '/$MVN_LOCATION/d' setup.sh 
+RUN cd /var/lib/ambari-server/resources/stacks/HDP/2.2/services && git clone https://github.com/abajwa-hw/zeppelin-stack.git && cd zeppelin-stack/package/scripts && sed -i '/$MVN_LOCATION/d' setup.sh 
 RUN cd /root && https://github.com/apache/incubator-zeppelin && cd incubator-zeppelin && sed -i "s/<id>hadoop-2.4<\/id>/<id>hadoop-2.6<\/id>/g" pom.xml && sed -i "s/<hadoop.version>2.4.0<\/hadoop.version>/<hadoop.version>2.6.0<\/hadoop.version>/g" pom.xml && sed -i "s/<jets3t.version>0.9.0<\/jets3t.version>/<jets3t.version>0.9.3<\/jets3t.version>\n\t\t\t\t<codehaus.jackson.version>1.9.13<\/codehaus.jackson.version>/g" pom.xml && mvn clean package -Phadoop-2.6 -Dhadoop.version=2.6.0 -Pspark-1.2 -Pyarn -DskipTests
 VOLUME /var/log
 
