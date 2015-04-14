@@ -3,7 +3,7 @@
 This projects aim is to help you to get started with ambari. The 2 easiest way
 to have an ambari server:
 
-- start an ec2 instance
+- start an ec2 instance.
 - start a virtual instance on your dev box
 
 Amazon is getting cheaper and cheaper, so its absolutely reasonable to spend the
