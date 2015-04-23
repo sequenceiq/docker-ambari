@@ -4,6 +4,10 @@ MAINTAINER SequenceIQ
 
 ADD ambari.repo /etc/yum.repos.d/
 
+# increase timeouts to avoid "No more mirrors to try" if yum repos are busy for a few minutes
+RUN echo "retries=0" >> /etc/yum.conf
+RUN echo "timeout=60" >> /etc/yum.conf
+
 RUN yum install -y ambari-server ambari-agent
 RUN yum install -y tar git curl bind-utils
 RUN ambari-server setup --silent
