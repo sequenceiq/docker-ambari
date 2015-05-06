@@ -1,6 +1,7 @@
 #!/bin/bash
 
 : ${BRIDGE_IP:="172.17.42.1"}
+: ${CLOUD_PLATFORM:="none"}
 
 [[ "TRACE" ]] && set -x
 
@@ -51,8 +52,17 @@ config-remote-jdbc() {
   fi
 }
 
+# GCP overrides the /etc/hosts file with its internal hostname, so we need to change the
+# order of the host resolution to try the DNS first
+reorder_dns_lookup() {
+  if [ "$CLOUD_PLATFORM" == "GCP" ] || [ "$CLOUD_PLATFORM" == "GCC" ]; then
+    sed -i "/^hosts:/ s/ *files dns/ dns files/" /etc/nsswitch.conf
+  fi
+}
+
 main() {
   fix-nameserver
+  reorder_dns_lookup
   config-remote-jdbc
   start_ambari
   while true; do
