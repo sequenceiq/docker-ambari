@@ -74,5 +74,8 @@ VOLUME /var/log
 # increase agent timeout
 RUN sed -i "s/agent.task.timeout=900/agent.task.timeout=2000/" /etc/ambari-server/conf/ambari.properties
 
+# always connect to Ambari server registered in consul dns
+RUN sed -i "s/^hostname=.*/hostname=ambari-8080.service.consul/" /etc/ambari-agent/conf/ambari-agent.ini
+
 EXPOSE 8080
 CMD ["/start-server"]
