@@ -21,19 +21,6 @@ search service.consul node.consul
 EOF
 }
 
-dig_ambari() {
-  dig @$BRIDGE_IP ambari-8080.service.consul +short
-}
-
-set-server-ip() {
-  while ! dig_ambari &>/dev/null || [ -z "$(dig_ambari)" ]; do
-    sleep 1
-    echo -n .
-  done
-  sed -i "s/^hostname=.*/hostname=$(dig_ambari)/" \
-    /etc/ambari-agent/conf/ambari-agent.ini
-}
-
 # GCP overrides the /etc/hosts file with its internal hostname, so we need to change the
 # order of the host resolution to try the DNS first
 reorder_dns_lookup() {
