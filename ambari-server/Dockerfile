@@ -17,11 +17,6 @@ RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 
 RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/install-ssh.sh | bash
 
-# warm up the image
-ADD HDP.repo /etc/yum.repos.d/
-ADD download-warmup-deps.sh /tmp/
-RUN /tmp/download-warmup-deps.sh
-
 # kerberos client
 RUN yum install -y krb5-workstation 
 
@@ -34,8 +29,6 @@ ENV JAVA_HOME /usr/jdk64/jdk1.7.0_67
 ENV PATH $PATH:$JAVA_HOME/bin
 ENV PLUGIN_PATH /plugins
 WORKDIR /tmp
-
-RUN curl -o /var/lib/ambari-server/resources/views/hive-0.1.0-SNAPSHOT.jar https://s3-eu-west-1.amazonaws.com/sequenceiq/hive-0.1.0-20150306.030234-109.jar
 
 # fixing pgsql issue
 RUN rm -rf /tmp/.s.PGSQL.5432.*
@@ -61,7 +54,6 @@ RUN yum install -y openssh-server openssh-clients \
   && cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys \
   && sed  -i "/^[^#]*UsePAM/ s/.*/#&/"  /etc/ssh/sshd_config \
   && echo "UsePAM no" >> /etc/ssh/sshd_config
-
 
 COPY start-agent /start-agent
 COPY start-server /start-server
