@@ -16,7 +16,7 @@ debug() {
 fix-nameserver() {
   cat>/etc/resolv.conf<<EOF
 nameserver $BRIDGE_IP
-search service.consul node.consul
+search service.consul node.dc1.consul
 EOF
 }
 
