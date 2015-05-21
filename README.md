@@ -7,7 +7,7 @@ to have an ambari server:
 - start a virtual instance on your dev box
 
 Amazon is getting cheaper and cheaper, so its absolutely reasonable to spend the
-price of a cappuccino to try ambari on EC22. But sometimes you want it for 'free'
+price of a cappuccino to try ambari on EC2. But sometimes you want it for 'free'
 or for whatever reason you don't want to use AWS.
 
 You could go than for a virtual instance, and the use `virtualbox` or `vmware`,
