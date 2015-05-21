@@ -65,10 +65,7 @@ main() {
   reorder_dns_lookup
   config-remote-jdbc
   start_ambari
-  while true; do
-    sleep 3
-    tail -f /var/log/ambari-server/ambari-server.log
-  done
+  tail -F /var/log/ambari-server/ambari-server.log
 }
 
 main "$@"
