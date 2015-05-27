@@ -37,6 +37,9 @@ RUN rm -rf /tmp/.s.PGSQL.5432.*
 RUN mkdir -p /usr/lib/hadoop/lib
 ENV HADOOP_CLASSPATH /usr/lib/hadoop/lib/*
 
+# add mysql connector to ambari-server so it can be downloaded by services (e.g.: Ranger)
+ADD mysql-connector-java-5.1.17.jar /var/lib/ambari-server/resources/mysql-jdbc-driver.jar
+
 ADD public-hostname.sh /etc/ambari-agent/conf/public-hostname.sh
 ADD internal-hostname.sh /etc/ambari-agent/conf/internal-hostname.sh
 RUN sed -i "/\[agent\]/ a public_hostname_script=\/etc\/ambari-agent\/conf\/public-hostname.sh" /etc/ambari-agent/conf/ambari-agent.ini
