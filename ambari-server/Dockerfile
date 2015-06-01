@@ -18,7 +18,7 @@ RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 RUN curl -L https://raw.githubusercontent.com/sequenceiq/docker-ssh/master/install-ssh.sh | bash
 
 # kerberos client
-RUN yum install -y krb5-workstation 
+RUN yum install -y krb5-workstation
 
 # add ambari shell to the image so new users don't need the 1GB java image
 RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.sequenceiq.com/releases/com/sequenceiq/ambari-shell/0.1.25/ambari-shell-0.1.25.jar
@@ -71,6 +71,9 @@ RUN sed -i "s/agent.task.timeout=900/agent.task.timeout=2000/" /etc/ambari-serve
 
 # always connect to Ambari server registered in consul dns
 RUN sed -i "s/^hostname=.*/hostname=ambari-8080.service.consul/" /etc/ambari-agent/conf/ambari-agent.ini
+
+# do not use the docker0 interface
+RUN sed -i "s/\"ifconfig\"/\"ifconfig eth0\"/" /usr/lib/python2.6/site-packages/ambari_agent/Facter.py
 
 EXPOSE 8080
 CMD ["/start-server"]
