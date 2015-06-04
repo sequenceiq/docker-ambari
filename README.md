@@ -1,4 +1,4 @@
-# Ambari on docker
+# Ambari on Docker
 
 This projects aim is to help you to get started with ambari. The 2 easiest way
 to have an ambari server:
