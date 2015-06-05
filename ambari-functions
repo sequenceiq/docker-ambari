@@ -9,7 +9,7 @@ USAGE
 : ${NODE_PREFIX=amb}
 : ${AMBARI_SERVER_NAME:=${NODE_PREFIX}0}
 : ${MYDOMAIN:=mycorp.kom}
-: ${IMAGE:="sequenceiq/ambari:2.0.0"}
+: ${IMAGE:="dlyle65535/ambari:2.1.0-serf"}
 : ${DOCKER_OPTS:="--dns 127.0.0.1 --entrypoint /usr/local/serf/bin/start-serf-agent.sh -e KEYCHAIN=$KEYCHAIN"}
 : ${CLUSTER_SIZE:=3}
 : ${DEBUG:=1}
