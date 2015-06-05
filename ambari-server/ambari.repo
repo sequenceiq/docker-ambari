@@ -1,7 +1,8 @@
-[AMBARI.2.0.0-2.x]
+#VERSION_NUMBER=2.1.0-603
+[AMBARI.2.1.0-2.x]
 name=Ambari 2.x
-baseurl= http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/2.x/latest/2.0.0/
+baseurl=http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/2.x/BUILDS/2.1.0-603/
 gpgcheck=1
-gpgkey= http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+gpgkey=http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
 enabled=1
 priority=1

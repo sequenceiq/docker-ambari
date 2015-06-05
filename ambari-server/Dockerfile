@@ -41,8 +41,8 @@ RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.seque
 ADD install-cluster.sh /tmp/
 ADD wait-for-host-number.sh /tmp/
 ADD ambari-shell.sh /tmp/
-ENV JAVA_HOME /usr/jdk64/jdk1.7.0_67
-ENV PATH $PATH:$JAVA_HOME/bin
+ENV JAVA_HOME /usr/jdk64/jdk1.8.0_40
+ENV PATH $JAVA_HOME/bin:$PATH
 WORKDIR /tmp
 
 # add HIVE view jar - before ambari-server setup
