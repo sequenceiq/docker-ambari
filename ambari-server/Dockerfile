@@ -8,9 +8,18 @@ ADD ambari.repo /etc/yum.repos.d/
 RUN echo "retries=0" >> /etc/yum.conf
 RUN echo "timeout=60" >> /etc/yum.conf
 
+# install Ambari specified 1.7 jdk
+ADD http://public-repo-1.hortonworks.com/ARTIFACTS/jdk-7u67-linux-x64.tar.gz /usr/jdk64/
+RUN cd /usr/jdk64 && tar -xf jdk-7u67-linux-x64.tar.gz && rm -f jdk-7u67-linux-x64.tar.gz
+ENV JAVA_HOME /usr/jdk64/jdk1.7.0_67
+ENV PATH $PATH:$JAVA_HOME/bin
+# jce
+ADD http://public-repo-1.hortonworks.com/ARTIFACTS/UnlimitedJCEPolicyJDK7.zip $JAVA_HOME/jre/lib/security/
+RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f UnlimitedJCEPolicyJDK7.zip && mv UnlimitedJCEPolicy/*jar . && rm -rf UnlimitedJCEPolicy
+
 RUN yum install -y ambari-server ambari-agent
 RUN yum install -y tar git curl bind-utils
-RUN ambari-server setup --silent
+RUN ambari-server setup --silent --java-home $JAVA_HOME
 
 # fix annoying PAM error 'couldnt open session'
 RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
@@ -25,8 +34,6 @@ RUN curl -o /tmp/ambari-shell.jar https://s3-eu-west-1.amazonaws.com/maven.seque
 ADD install-cluster.sh /tmp/
 ADD wait-for-host-number.sh /tmp/
 ADD ambari-shell.sh /tmp/
-ENV JAVA_HOME /usr/jdk64/jdk1.8.0_40
-ENV PATH $PATH:$JAVA_HOME/bin
 ENV PLUGIN_PATH /plugins
 WORKDIR /tmp
 
