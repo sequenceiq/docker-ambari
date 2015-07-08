@@ -1,5 +1,5 @@
 # Creates an Ambari Server base on vanilla centos
-FROM sequenceiq/pam:centos-6.5
+FROM centos:6.6
 MAINTAINER SequenceIQ
 
 ADD ambari.repo /etc/yum.repos.d/
@@ -9,7 +9,7 @@ RUN echo "retries=0" >> /etc/yum.conf
 RUN echo "timeout=60" >> /etc/yum.conf
 
 RUN yum install -y ambari-server ambari-agent
-RUN yum install -y tar git curl bind-utils
+RUN yum install -y tar git curl bind-utils unzip
 RUN ambari-server setup --silent
 
 # fix annoying PAM error 'couldnt open session'
@@ -74,6 +74,8 @@ RUN sed -i "s/^hostname=.*/hostname=ambari-8080.service.consul/" /etc/ambari-age
 
 # do not use the docker0 interface
 RUN sed -i "s/\"ifconfig\"/\"ifconfig eth0\"/" /usr/lib/python2.6/site-packages/ambari_agent/Facter.py
+
+ENV PS1 "[\u@docker-ambari \W]# "
 
 EXPOSE 8080
 CMD ["/start-server"]
