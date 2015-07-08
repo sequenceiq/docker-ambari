@@ -1,5 +1,5 @@
 # Creates an Ambari Server base on vanilla centos
-FROM sequenceiq/pam:centos-6.5
+FROM centos:6.6
 MAINTAINER SequenceIQ
 
 ADD ambari.repo /etc/yum.repos.d/
@@ -7,6 +7,8 @@ ADD ambari.repo /etc/yum.repos.d/
 # increase timeouts to avoid "No more mirrors to try" if yum repos are busy for a few minutes
 RUN echo "retries=0" >> /etc/yum.conf
 RUN echo "timeout=60" >> /etc/yum.conf
+
+RUN yum install -y tar git curl bind-utils unzip
 
 # install Ambari specified 1.7 jdk
 ADD http://public-repo-1.hortonworks.com/ARTIFACTS/jdk-7u67-linux-x64.tar.gz /usr/jdk64/
@@ -18,7 +20,6 @@ ADD http://public-repo-1.hortonworks.com/ARTIFACTS/UnlimitedJCEPolicyJDK7.zip $J
 RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f UnlimitedJCEPolicyJDK7.zip && mv UnlimitedJCEPolicy/*jar . && rm -rf UnlimitedJCEPolicy
 
 RUN yum install -y ambari-server ambari-agent
-RUN yum install -y tar git curl bind-utils
 RUN ambari-server setup --silent --java-home $JAVA_HOME
 
 # fix annoying PAM error 'couldnt open session'
@@ -81,6 +82,8 @@ RUN sed -i "s/^hostname=.*/hostname=ambari-8080.service.consul/" /etc/ambari-age
 
 # do not use the docker0 interface
 RUN sed -i "s/\"ifconfig\"/\"ifconfig eth0\"/" /usr/lib/python2.6/site-packages/ambari_agent/Facter.py
+
+ENV PS1 "[\u@docker-ambari \W]# "
 
 EXPOSE 8080
 CMD ["/start-server"]
