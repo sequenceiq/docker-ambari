@@ -1,5 +1,5 @@
 # Creates an Ambari Server base on vanilla centos
-FROM centos:6.6
+FROM maci0/systemd
 MAINTAINER SequenceIQ
 
 ADD ambari.repo /etc/yum.repos.d/
@@ -20,6 +20,11 @@ ADD http://public-repo-1.hortonworks.com/ARTIFACTS/UnlimitedJCEPolicyJDK7.zip $J
 RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f UnlimitedJCEPolicyJDK7.zip && mv UnlimitedJCEPolicy/*jar . && rm -rf UnlimitedJCEPolicy
 
 RUN yum install -y ambari-server ambari-agent
+RUN sed -i 's/\/usr\/bin\/env service/\/usr\/bin\/env systemctl/' /usr/lib/python2.6/site-packages/ambari_server/dbConfiguration_linux.py
+RUN sed -i 's/PG_ST_CMD = "%s %s status"/PG_ST_CMD = "%s status %s"/' /usr/lib/python2.6/site-packages/ambari_server/dbConfiguration_linux.py
+RUN sed -i 's/PG_START_CMD = "%s %s start"/PG_START_CMD = "%s start %s"/' /usr/lib/python2.6/site-packages/ambari_server/dbConfiguration_linux.py
+RUN sed -i 's/PG_RESTART_CMD = "%s %s restart"/PG_RESTART_CMD = "%s restart %s"/' /usr/lib/python2.6/site-packages/ambari_server/dbConfiguration_linux.py
+RUN sed -i 's/PG_HBA_RELOAD_CMD = "%s %s reload"/PG_HBA_RELOAD_CMD = "%s reload %s"/' /usr/lib/python2.6/site-packages/ambari_server/dbConfiguration_linux.py
 RUN ambari-server setup --silent --java-home $JAVA_HOME
 
 # fix annoying PAM error 'couldnt open session'
