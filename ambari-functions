@@ -8,9 +8,10 @@ USAGE
 
 : ${NODE_PREFIX=amb}
 : ${AMBARI_SERVER_NAME:=${NODE_PREFIX}0}
-: ${MYDOMAIN:=mycorp.kom}
-: ${IMAGE:="sequenceiq/ambari:1.7.0-warmup"} 
-: ${DOCKER_OPTS:="--dns 127.0.0.1 --entrypoint /usr/local/serf/bin/start-serf-agent.sh -e KEYCHAIN=$KEYCHAIN"}
+: ${IMAGE:="sequenceiq/ambari:2.1.0-consul"}
+: ${DOCKER_OPTS:=""}
+: ${CONSUL:=consul}
+: ${CONSUL_IMAGE:=sequenceiq/consul:v0.5.0-v6}
 : ${CLUSTER_SIZE:=3}
 : ${DEBUG:=1}
 : ${SLEEP_TIME:=2}
@@ -27,11 +28,15 @@ run-command() {
 }
 
 amb-clean() {
-  unset NODE_PREFIX AMBARI_SERVER_NAME MYDOMAIN IMAGE DOCKER_OPTS DEBUG SLEEP_TIME AMBARI_SERVER_IP DRY_RUN
+  unset NODE_PREFIX AMBARI_SERVER_NAME IMAGE DOCKER_OPTS CONSUL CONSUL_IMAGE DEBUG SLEEP_TIME AMBARI_SERVER_IP DRY_RUN
 }
 
 get-ambari-server-ip() {
   AMBARI_SERVER_IP=$(get-host-ip ${AMBARI_SERVER_NAME})
+}
+
+get-consul-ip() {
+  get-host-ip $CONSUL
 }
 
 get-host-ip() {
@@ -40,14 +45,12 @@ get-host-ip() {
 }
 
 amb-members() {
-  get-ambari-server-ip
-  serf members --rpc-addr $(docker inspect --format "{{.NetworkSettings.IPAddress}}" ${AMBARI_SERVER_NAME}):7373
+  curl http://$(get-consul-ip):8500/v1/catalog/nodes | sed -e 's/,{"Node":"ambari-8080.*}//g' -e 's/,{"Node":"consul.*}//g'
 }
 
 amb-settings() {
   cat <<EOF
   NODE_PREFIX=$NODE_PREFIX
-  MYDOMAIN=$MYDOMAIN
   CLUSTER_SIZE=$CLUSTER_SIZE
   AMBARI_SERVER_NAME=$AMBARI_SERVER_NAME
   IMAGE=$IMAGE
@@ -87,7 +90,7 @@ _amb_run_shell() {
   : ${COMMAND:? required}
   get-ambari-server-ip
   NODES=$(docker inspect --format="{{.Config.Image}} {{.Name}}" $(docker ps -q)|grep $IMAGE|grep $NODE_PREFIX|wc -l|xargs)
-  run-command docker run -it --rm -e EXPECTED_HOST_COUNT=$NODES -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver --entrypoint /bin/sh $IMAGE -c $COMMAND
+  run-command docker run -it --rm -e EXPECTED_HOST_COUNT=$((NODES-1)) -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver --entrypoint /bin/sh $IMAGE -c $COMMAND
 }
 
 amb-shell() {
@@ -111,7 +114,15 @@ amb-deploy-cluster() {
 }
 
 amb-start-first() {
-  run-command docker run -d $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.$MYDOMAIN $IMAGE --tag ambari-server=true
+  run-command docker run -d -p 8500:8500 -p 53:53 --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
+  sleep 5
+
+  run-command docker run -d $DOCKER_OPTS --dns $(get-consul-ip) --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $IMAGE /start-server
+
+  get-ambari-server-ip
+
+  _consul-register-service $AMBARI_SERVER_NAME $AMBARI_SERVER_IP
+  _consul-register-service ambari-8080 $AMBARI_SERVER_IP
 }
 
 amb-copy-to-hdfs() {
@@ -148,5 +159,18 @@ amb-start-node() {
     shift
     MORE_OPTIONS="$@"
   fi
-  run-command docker run $MORE_OPTIONS -e SERF_JOIN_IP=$AMBARI_SERVER_IP $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.$MYDOMAIN $IMAGE --log-level debug
+
+  run-command docker run $MORE_OPTIONS -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS --dns $(get-consul-ip) --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.service.consul $IMAGE /start-agent
+
+  _consul-register-service ${NODE_PREFIX}${NUMBER} $(get-host-ip ${NODE_PREFIX}$NUMBER)
+}
+
+_consul-register-service() {
+  curl -X PUT -d "{
+    \"Node\": \"$1\",
+    \"Address\": \"$2\",
+    \"Service\": {
+      \"Service\": \"$1\"
+    }
+  }" http://$(get-consul-ip):8500/v1/catalog/register
 }
