@@ -7,11 +7,11 @@ full documentation: https://github.com/sequenceiq/docker-ambari
 USAGE
 
 : ${NODE_PREFIX=amb}
-: ${AMBARI_SERVER_NAME:=${NODE_PREFIX}0}
+: ${AMBARI_SERVER_NAME:=${NODE_PREFIX}-server}
 : ${IMAGE:="sequenceiq/ambari:2.1.0-consul"}
 : ${DOCKER_OPTS:=""}
-: ${CONSUL:=consul}
-: ${CONSUL_IMAGE:=sequenceiq/consul:v0.5.0-v6}
+: ${CONSUL:="consul"}
+: ${CONSUL_IMAGE:="sequenceiq/consul:v0.5.0-v6"}
 : ${CLUSTER_SIZE:=3}
 : ${DEBUG:=1}
 : ${SLEEP_TIME:=2}
