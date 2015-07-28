@@ -116,7 +116,7 @@ amb-deploy-cluster() {
 }
 
 amb-start-first() {
-  run-command docker run -d -p 8500:8500 -p 53:53 --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
+  run-command docker run -d --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
   sleep 5
 
   run-command docker run -d -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $IMAGE /start-server
