@@ -10,7 +10,7 @@ USAGE
 : ${AMBARI_SERVER_NAME:=${NODE_PREFIX}-server}
 : ${IMAGE:="sequenceiq/ambari:2.1.0-consul"}
 : ${DOCKER_OPTS:=""}
-: ${CONSUL:="consul"}
+: ${CONSUL:="${NODE_PREFIX}-consul"}
 : ${CONSUL_IMAGE:="sequenceiq/consul:v0.5.0-v6"}
 : ${CLUSTER_SIZE:=3}
 : ${DEBUG:=1}
@@ -56,6 +56,8 @@ amb-settings() {
   IMAGE=$IMAGE
   DOCKER_OPTS=$DOCKER_OPTS
   AMBARI_SERVER_IP=$AMBARI_SERVER_IP
+  CONSUL=$CONSUL
+  CONSUL_IMAGE=$CONSUL_IMAGE
   DRY_RUN=$DRY_RUN
 EOF
 }
@@ -114,7 +116,7 @@ amb-deploy-cluster() {
 }
 
 amb-start-first() {
-  run-command docker run -d -p 8500:8500 -p 53:53 --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
+  run-command docker run -d --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
   sleep 5
 
   run-command docker run -d -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $IMAGE /start-server
