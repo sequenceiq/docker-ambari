@@ -1,5 +1,9 @@
 # Ambari on Docker
 
+[![DockerPulls](https://img.shields.io/docker/pulls/sequenceiq/ambari.svg)](https://registry.hub.docker.com/u/sequenceiq/ambari/)
+[![DockerStars](https://img.shields.io/docker/stars/sequenceiq/ambari.svg)](https://registry.hub.docker.com/u/sequenceiq/ambari/)
+
+
 This projects aim is to help you to get started with ambari. The 2 easiest way
 to have an ambari server:
 
