@@ -32,7 +32,6 @@ reorder_dns_lookup() {
 main() {
   fix-nameserver
   reorder_dns_lookup
-  set-server-ip
   ambari-agent start -v
   /etc/init.d/sshd start
   while true; do
