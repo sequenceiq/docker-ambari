@@ -13,9 +13,10 @@ USAGE
 : ${CONSUL:="${NODE_PREFIX}-consul"}
 : ${CONSUL_IMAGE:="sequenceiq/consul:v0.5.0-v6"}
 : ${CLUSTER_SIZE:=3}
-: ${DEBUG:=1}
+: ${DEBUG:=0}
 : ${SLEEP_TIME:=2}
 : ${DRY_RUN:=false}
+: ${VM_MEMORY:=8}
 
 run-command() {
   CMD="$@"
@@ -80,7 +81,9 @@ amb-start-cluster() {
   local act_cluster_size=$1
   : ${act_cluster_size:=$CLUSTER_SIZE}
   echo starting an ambari cluster with: $act_cluster_size nodes
-
+  local cpu_share=$((1024/$act_cluster_size))
+  local memory_limit=$(($VM_MEMORY/$act_cluster_size*1024*1024*1024))
+  DOCKER_LIMIT_OPTS="--cpu-shares $cpu_share --memory $memory_limit --memory-swap 0"
   amb-start-first
   [ $act_cluster_size -gt 1 ] && for i in $(seq $((act_cluster_size - 1))); do
     amb-start-node $i
@@ -119,7 +122,7 @@ amb-start-first() {
   run-command docker run -d --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
   sleep 5
 
-  run-command docker run -d -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $IMAGE /start-server
+  run-command docker run -d -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS $DOCKER_LIMIT_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $IMAGE /start-server
 
   get-ambari-server-ip
 
@@ -162,7 +165,7 @@ amb-start-node() {
     MORE_OPTIONS="$@"
   fi
 
-  run-command docker run $MORE_OPTIONS -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.service.consul $IMAGE /start-agent
+  run-command docker run $MORE_OPTIONS -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS $DOCKER_LIMIT_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.service.consul $IMAGE /start-agent
 
   _consul-register-service ${NODE_PREFIX}${NUMBER} $(get-host-ip ${NODE_PREFIX}$NUMBER)
 }
