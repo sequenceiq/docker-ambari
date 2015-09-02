@@ -15,6 +15,8 @@ USAGE
 : ${CLUSTER_SIZE:=3}
 : ${DEBUG:=1}
 : ${SLEEP_TIME:=2}
+: ${DNS_PORT:=53}
+: ${EXPOSE_DNS:=false}
 : ${DRY_RUN:=false}
 
 run-command() {
@@ -116,7 +118,11 @@ amb-deploy-cluster() {
 }
 
 amb-start-first() {
-  run-command docker run -d --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
+  local dns_port_command=""
+  if [ "$EXPOSE_DNS" == "true" ]; then
+     dns_port_command="-p 53:$DNS_PORT/udp"
+  fi
+  run-command docker run -d $dns_port_command --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
   sleep 5
 
   run-command docker run -d -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $IMAGE /start-server
