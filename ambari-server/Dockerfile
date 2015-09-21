@@ -75,6 +75,7 @@ RUN curl -o /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq && chmo
 VOLUME /var/log
 
 # increase agent timeout
+RUN sed -i "s/agent.package.install.task.timeout=1800/agent.package.install.task.timeout=2400/" /etc/ambari-server/conf/ambari.properties
 RUN sed -i "s/agent.task.timeout=900/agent.task.timeout=2000/" /etc/ambari-server/conf/ambari.properties
 
 # always connect to Ambari server registered in consul dns
