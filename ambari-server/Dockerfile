@@ -84,6 +84,13 @@ RUN sed -i "s/^hostname=.*/hostname=ambari-8080.service.consul/" /etc/ambari-age
 # do not use the docker0 interface
 RUN sed -i "s/\"ifconfig\"/\"ifconfig eth0\"/" /usr/lib/python2.6/site-packages/ambari_agent/Facter.py
 
+# install Zeppelin
+RUN yum install -y wget
+RUN wget http://xenia.sote.hu/ftp/mirrors/www.apache.org/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz && tar xzf apache-maven-3.3.3-bin.tar.gz -C /usr/local && cd /usr/local && ln -s apache-maven-3.3.3 maven
+ENV M2_HOME /usr/local/maven
+ENV PATH $PATH:$M2_HOME/bin
+RUN cd /var/lib/ambari-server/resources/stacks/HDP/2.2/services && git clone https://github.com/sequenceiq/zeppelin-stack.git
+
 ENV PS1 "[\u@docker-ambari \W]# "
 
 EXPOSE 8080
