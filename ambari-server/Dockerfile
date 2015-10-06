@@ -22,6 +22,9 @@ RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f 
 RUN yum install -y ambari-server ambari-agent
 RUN ambari-server setup --silent --java-home $JAVA_HOME
 
+# increase PermGen Space for Ambari views
+ENV AMBARI_JVM_ARGS -XX:MaxPermSize=512m
+
 # fix annoying PAM error 'couldnt open session'
 RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 
