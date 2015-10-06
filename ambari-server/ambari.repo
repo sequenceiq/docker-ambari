@@ -1,8 +1,8 @@
-#VERSION_NUMBER=2.1.1-236
+#VERSION_NUMBER=2.1.2-377
 
-[Updates-ambari-2.1.1]
-name=ambari-2.1.1 - Updates
-baseurl=http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.1.1
+[Updates-ambari-2.1.2]
+name=ambari-2.1.2 - Updates
+baseurl=http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.1.2
 gpgcheck=1
 gpgkey=http://public-repo-1.hortonworks.com/ambari/centos6/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
 enabled=1
