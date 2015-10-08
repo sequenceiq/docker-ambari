@@ -103,6 +103,7 @@ RUN cd /tmp/wasb/WEB-INF/lib/ && mv ambari-views-utils-fixed-wasb.jar $(jar tf /
 RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/files*.jar WEB-INF/lib/*.jar
 RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/hive*.jar WEB-INF/lib/*.jar
 RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/pig*.jar WEB-INF/lib/*.jar
+RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/slider*.jar WEB-INF/lib/*.jar
 
 ENV PS1 "[\u@docker-ambari \W]# "
 
