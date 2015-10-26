@@ -40,7 +40,7 @@ main() {
   local-nameserver
   reorder-dns-lookup
   set-server-ip
-  ambari-agent start -v
+  ambari-agent start
   /etc/init.d/sshd start
   while true; do
     sleep 3
