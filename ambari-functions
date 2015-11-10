@@ -21,7 +21,7 @@ USAGE
 
 run-command() {
   CMD="$@"
-  if [ "$DRY_RUN" == "false" ]; then
+  if [[ "$DRY_RUN" == "false" ]]; then
     debug "$CMD"
     "$@"
   else
@@ -65,7 +65,7 @@ EOF
 }
 
 debug() {
-  [ $DEBUG -gt 0 ] && echo [DEBUG] "$@" 1>&2
+  [ ${DEBUG} -gt 0 ] && echo "[DEBUG] $@" 1>&2
 }
 
 docker-ps() {
@@ -105,7 +105,7 @@ amb-deploy-cluster() {
   local act_cluster_size=$1
   : ${act_cluster_size:=$CLUSTER_SIZE}
 
-  if [ $# -gt 1 ]; then
+  if [[ $# -gt 1 ]]; then
     BLUEPRINT=$2
   else
     [ $act_cluster_size -gt 1 ] && BLUEPRINT=multi-node-hdfs-yarn || BLUEPRINT=single-node-hdfs-yarn
@@ -119,7 +119,7 @@ amb-deploy-cluster() {
 
 amb-start-first() {
   local dns_port_command=""
-  if [ "$EXPOSE_DNS" == "true" ]; then
+  if [[ "$EXPOSE_DNS" == "true" ]]; then
      dns_port_command="-p 53:$DNS_PORT/udp"
   fi
   run-command docker run -d $dns_port_command --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
@@ -161,7 +161,7 @@ amb-start-node() {
   get-ambari-server-ip
   : ${AMBARI_SERVER_IP:?"AMBARI_SERVER_IP is needed"}
   NUMBER=${1:?"please give a <NUMBER> parameter it will be used as node<NUMBER>"}
-  if [ $# -eq 1 ] ;then
+  if [[ $# -eq 1 ]]; then
     MORE_OPTIONS="-d"
   else
     shift
