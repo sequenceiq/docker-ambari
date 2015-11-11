@@ -20,6 +20,7 @@ ADD http://public-repo-1.hortonworks.com/ARTIFACTS/UnlimitedJCEPolicyJDK7.zip $J
 RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f UnlimitedJCEPolicyJDK7.zip && mv UnlimitedJCEPolicy/*jar . && rm -rf UnlimitedJCEPolicy
 
 RUN yum install -y ambari-server ambari-agent
+RUN sed -i "/os.killpg(os.getpgid(pid), signal.SIGKILL)/ s/.*/      os.kill(pid, signal.SIGKILL)/" /usr/sbin/ambari-server.py
 RUN ambari-server setup --silent --java-home $JAVA_HOME
 
 # increase PermGen Space for Ambari views
