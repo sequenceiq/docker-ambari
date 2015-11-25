@@ -1,7 +1,6 @@
 #!/bin/bash
 
 : ${BRIDGE_IP:="172.17.42.1"}
-: ${CONSUL_HTTP_PORT:="8500"}
 : ${CLOUD_PLATFORM:="none"}
 
 [[ "TRACE" ]] && set -x
@@ -39,7 +38,6 @@ main() {
   cleanup-rpmdb
   local-nameserver
   reorder-dns-lookup
-  set-server-ip
   ambari-agent start
   /etc/init.d/sshd start
   while true; do
