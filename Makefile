@@ -1,4 +1,4 @@
-TAG = $(shell git describe --tags)
+TAG = $(shell git  describe --tags --abbrev=0)
 UNAME = $(shell uname)
 
 deps:

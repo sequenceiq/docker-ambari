@@ -106,6 +106,10 @@ RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/hive*.jar WEB
 RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/pig*.jar WEB-INF/lib/*.jar
 RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/slider*.jar WEB-INF/lib/*.jar
 
+# Add jars from packer image
+ADD dash-azure-storage-2.2.0.jar /usr/lib/hadoop/lib/
+ADD gcs-connector-latest-hadoop2.jar /usr/lib/hadoop/lib/
+
 ENV PS1 "[\u@docker-ambari \W]# "
 
 EXPOSE 8080
