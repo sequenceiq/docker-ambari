@@ -25,7 +25,7 @@ but Docker has some benefits:
 
 ## Install Docker
 
-Follow the description at the docker [getting started](http://docs.docker.com/mac/started/)
+Follow the description at the docker getting started page: ([Linux](http://docs.docker.com/linux/started/), [Mac](http://docs.docker.com/mac/started/), [Windows](http://docs.docker.com/windows/started/))
 
 **Note:** If you are using `boot2docker` make sure you forward all ports from docker:
 http://docs.docker.io/en/latest/installation/mac/#forwarding-vm-port-range-to-host
