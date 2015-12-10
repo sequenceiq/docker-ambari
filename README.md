@@ -33,21 +33,31 @@ http://docs.docker.io/en/latest/installation/mac/#forwarding-vm-port-range-to-ho
 ## Starting the container
 
 This will start (and download if you never used it before) an image based on
-centos-6 with preinstalled Ambari 2.1.0 ready to install HDP 2.3.
-
+centos-6 with pre-installed Ambari 2.1.0 ready to install HDP 2.3. This git repository contains an ambari-functions script
+which will launch all the necessary containers to create a fully functional cluster. Download the file and source it:
 ```
-docker run -d -P -h amb0.mycorp.kom -e KEYCHAIN=<keychain@email> --name amb0  sequenceiq/ambari --tag ambari-server=true
+. ambari-functions or source ambari-functions
 ```
-
-The explanation of the parameters:
-
-- **-d**: run as daemon
-- **-P**: expose all ports defined in the Dockerfile
-- **-h amb0.mycorp.kom**: sets the hostname
-- **--name amb0**: sets the container name to **amb0** (no need to use )
-- **-e KEYCHAIN=<email>** your keychain.io email. Keychain.io is a free service
-  which can store, and serve pulic keys for ssh authentication.
-  You can upload you public key as: `curl -s ssh.keychain.io/<email>/upload | bash`
+Now you can issue commands with `amb-`prefix like:
+```
+amb-settings
+```
+To start a 3 node cluster:
+```
+amb-start-cluster 3
+```
+It will launch containers like this (1 Ambari server 2 agents 1 consul server):
+```
+CONTAINER ID        IMAGE                          COMMAND                  STATUS              NAMES
+089f7f9e0b9e        sequenceiq/ambari:2.1.2-v1     "/start-agent"           Up 5 seconds        amb2
+0bd64322fe07        sequenceiq/ambari:2.1.2-v1     "/start-agent"           Up 6 seconds        amb1
+c7225f18fb0c        sequenceiq/ambari:2.1.2-v1     "/start-server"          Up 7 seconds        amb-server
+bdca911bf416        sequenceiq/consul:v0.5.0-v6    "/bin/start -server -"   Up 13 seconds       amb-consul
+```
+Now you can reach the Ambari UI on the amb-server container's 8080 port. `amb-settings` for IP:
+```
+AMBARI_SERVER_IP=172.17.0.17
+```
 
 ## Cluster deployment via blueprint
 
@@ -57,7 +67,7 @@ or perform automated provisioning. We will use the automated way, and of
 course there is a docker image, with prepared ambari-shell in it:
 
 ```
-docker run -e BLUEPRINT=single-node-hdfs-yarn --link amb0:ambariserver -t --rm --entrypoint /bin/sh sequenceiq/ambari-shell -c /tmp/install-cluster.sh
+amb-shell
 ```
 
 Ambari-shell uses Ambari's new [Blueprints](https://cwiki.apache.org/confluence/display/AMBARI/Blueprints)

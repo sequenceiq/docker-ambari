@@ -22,6 +22,9 @@ RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f 
 RUN yum install -y ambari-server ambari-agent
 RUN ambari-server setup --silent --java-home $JAVA_HOME
 
+# increase PermGen Space for Ambari views
+ENV AMBARI_JVM_ARGS -XX:MaxPermSize=512m
+
 # fix annoying PAM error 'couldnt open session'
 RUN sed -i "/pam_limits/ s/^/#/" /etc/pam.d/*
 
@@ -45,8 +48,9 @@ RUN rm -rf /tmp/.s.PGSQL.5432.*
 RUN mkdir -p /usr/lib/hadoop/lib
 ENV HADOOP_CLASSPATH /usr/lib/hadoop/lib/*
 
-# add mysql connector to ambari-server so it can be downloaded by services (e.g.: Ranger)
+# add mysql and psql connectors to ambari-server so it can be downloaded by services (e.g.: Ranger)
 ADD mysql-connector-java-5.1.17.jar /var/lib/ambari-server/resources/mysql-jdbc-driver.jar
+ADD postgresql-8.4-703.jdbc4.jar /var/lib/ambari-server/resources/postgres-jdbc-driver.jar
 
 ADD public-hostname.sh /etc/ambari-agent/conf/public-hostname.sh
 ADD internal-hostname.sh /etc/ambari-agent/conf/internal-hostname.sh
@@ -90,6 +94,21 @@ RUN wget http://xenia.sote.hu/ftp/mirrors/www.apache.org/maven/maven-3/3.3.3/bin
 ENV M2_HOME /usr/local/maven
 ENV PATH $PATH:$M2_HOME/bin
 RUN cd /var/lib/ambari-server/resources/stacks/HDP/2.2/services && git clone https://github.com/sequenceiq/zeppelin-stack.git
+
+# fix Ambari views with WASB
+# remove after Ambari 2.1.3
+ADD ambari-views-utils-fixed-wasb.jar /tmp/wasb/WEB-INF/lib/
+ADD azure-storage-2.2.0.jar /tmp/wasb/WEB-INF/lib/
+ADD hadoop-azure-2.7.1.jar /tmp/wasb/WEB-INF/lib/
+RUN cd /tmp/wasb/WEB-INF/lib/ && mv ambari-views-utils-fixed-wasb.jar $(jar tf /var/lib/ambari-server/resources/views/files-*.jar | grep ambari-view | cut -d "/" -f 3)
+RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/files*.jar WEB-INF/lib/*.jar
+RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/hive*.jar WEB-INF/lib/*.jar
+RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/pig*.jar WEB-INF/lib/*.jar
+RUN cd /tmp/wasb && jar -uf /var/lib/ambari-server/resources/views/slider*.jar WEB-INF/lib/*.jar
+
+# Add jars from packer image
+ADD dash-azure-storage-2.2.0.jar /usr/lib/hadoop/lib/
+ADD gcs-connector-latest-hadoop2.jar /usr/lib/hadoop/lib/
 
 ENV PS1 "[\u@docker-ambari \W]# "
 
