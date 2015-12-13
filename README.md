@@ -86,3 +86,27 @@ For the multi node Hadoop cluster instructions please read our [blog](http://blo
 curl -Lo .amb j.mp/docker-ambari && . .amb && amb-deploy-cluster
 ```
 
+## Locally Hosting HDP Repos
+
+Download the repos and untar the repos: 
+
+```
+wget http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/HDP-2.3.2.0-centos6-rpm.tar.gz
+wget http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.20/repos/centos6/HDP-UTILS-1.1.0.20-centos6.tar.gz
+tar -xzvf HDP-2.3.2.0-centos6-rpm.tar.gz
+tar -xzvf HDP-UTILS-1.0.0.20-centos.tar.gz
+```
+
+Copy repoinfo.xml to path containing the tar.gz files above (let's call that tar-path).
+
+Copy hdp_urlinfo.json to tar-path/HDP.
+
+Export the following environmental variables:
+
+```
+export DOCKER_OPTS="-v tar-path/repoinfo.xml:/var/lib/ambari-server/resources/stacks/HDP/2.3/repos/repoinfo.xml"
+export LOCAL_REPO_DIR="tar-path"
+export EXPOSE_DNS=true
+```
+
+Proceed with cluster creation as normal.
