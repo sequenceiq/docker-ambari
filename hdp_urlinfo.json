@@ -1,0 +1,43 @@
+{
+    "HDP-2.3": {
+        "latest": {
+            "centos7": "http://amb-repo.service.consul/HDP/centos7/2.x/updates/2.3.2.0/",
+            "centos6": "http://amb-repo.service.consul/HDP/centos6/2.x/updates/2.3.2.0/",
+            "debian6": "http://amb-repo.service.consul/HDP/debian6/2.x/updates/2.3.2.0/",
+            "debian7": "http://amb-repo.service.consul/HDP/debian7/2.x/updates/2.3.2.0/",
+            "suse11": "http://amb-repo.service.consul/HDP/suse11sp3/2.x/updates/2.3.2.0/",
+            "ubuntu12": "http://amb-repo.service.consul/HDP/ubuntu12/2.x/updates/2.3.2.0/",
+            "ubuntu14": "http://amb-repo.service.consul/HDP/ubuntu14/2.x/updates/2.3.2.0/"
+       }
+    },
+    "HDP-2.2": {
+        "latest": {
+            "centos5": "http://amb-repo.service.consul/HDP/centos5/2.x/updates/2.2.9.0/",
+            "centos6": "http://amb-repo.service.consul/HDP/centos6/2.x/updates/2.2.9.0/",
+            "suse11": "http://amb-repo.service.consul/HDP/suse11sp3/2.x/updates/2.2.9.0/",
+            "ubuntu12": "http://amb-repo.service.consul/HDP/ubuntu12/2.x/updates/2.2.9.0/"
+       }
+    },
+    "HDP-2.1": {
+        "latest": {
+            "centos5": "http://amb-repo.service.consul/HDP/centos5/2.x/updates/2.1.7.0/", 
+            "centos6": "http://amb-repo.service.consul/HDP/centos6/2.x/updates/2.1.7.0/", 
+            "suse11": "http://amb-repo.service.consul/HDP/suse11sp3/2.x/updates/2.1.7.0/",
+	    "ubuntu12": "http://amb-repo.service.consul/HDP/ubuntu12/2.1.7.0/"
+        }
+    },
+    "HDP-2.0": {
+        "latest": {
+            "centos5": "http://amb-repo.service.consul/HDP/centos5/2.x/updates/2.0.12.0/", 
+            "centos6": "http://amb-repo.service.consul/HDP/centos6/2.x/updates/2.0.12.0/", 
+            "suse11": "http://amb-repo.service.consul/HDP/suse11/2.x/updates/2.0.12.0/"
+        }
+    },
+    "HDP-1.3": {
+        "latest": {
+            "centos5": "http://amb-repo.service.consul/HDP/centos5/1.x/updates/1.3.8.0/", 
+            "centos6": "http://amb-repo.service.consul/HDP/centos6/1.x/updates/1.3.8.0/", 
+            "suse11": "http://amb-repo.service.consul/HDP/suse11/1.x/updates/1.3.8.0/"
+        }
+    }
+}
