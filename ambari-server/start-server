@@ -1,6 +1,5 @@
 #!/bin/bash
 
-: ${BRIDGE_IP:="172.17.42.1"}
 : ${CLOUD_PLATFORM:="none"}
 
 [[ "TRACE" ]] && set -x
@@ -9,13 +8,25 @@ debug() {
   [[ "DEBUG" ]]  && echo "[DEBUG] $@" 1>&2
 }
 
+get_bridge_ip() {
+  if [[ "$BRIDGE_IP" ]]; then
+    echo $BRIDGE_IP
+  else
+    if ip addr show docker0 &> /dev/null; then
+      ip addr show docker0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1
+    else
+      ip ro | grep default | cut -d" " -f 3
+    fi
+  fi
+}
+
 # --dns isn't available for: docker run --net=host
 # sed -i /etc/resolf.conf fails:
 # sed: cannot rename /etc/sedU9oCRy: Device or resource busy
 # here comes the tempfile workaround ...
 fix-nameserver() {
   cat>/etc/resolv.conf<<EOF
-nameserver $BRIDGE_IP
+nameserver $(get_bridge_ip)
 search service.consul node.dc1.consul
 EOF
 }
