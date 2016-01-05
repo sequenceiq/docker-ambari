@@ -8,7 +8,8 @@ USAGE
 
 : ${NODE_PREFIX=amb}
 : ${AMBARI_SERVER_NAME:=${NODE_PREFIX}-server}
-: ${IMAGE:="sequenceiq/ambari:2.2.0-v1"}
+: ${AMBARI_SERVER_IMAGE:="akanto/ambari-server"}
+: ${AMBARI_AGENT_IMAGE:="akanto/ambari-agent"}
 : ${DOCKER_OPTS:=""}
 : ${CONSUL:="${NODE_PREFIX}-consul"}
 : ${CONSUL_IMAGE:="sequenceiq/consul:v0.5.0-v6"}
@@ -30,7 +31,8 @@ run-command() {
 }
 
 amb-clean() {
-  unset NODE_PREFIX AMBARI_SERVER_NAME IMAGE DOCKER_OPTS CONSUL CONSUL_IMAGE DEBUG SLEEP_TIME AMBARI_SERVER_IP EXPOSE_DNS DRY_RUN
+  unset NODE_PREFIX AMBARI_SERVER_NAME AMBARI_SERVER_IMAGE AMBARI_AGENT_IMAGE DOCKER_OPTS CONSUL CONSUL_IMAGE DEBUG SLEEP_TIME AMBARI_SERVER_IP EXPOSE_DNS \
+        DRY_RUN
 }
 
 get-ambari-server-ip() {
@@ -55,7 +57,8 @@ amb-settings() {
   NODE_PREFIX=$NODE_PREFIX
   CLUSTER_SIZE=$CLUSTER_SIZE
   AMBARI_SERVER_NAME=$AMBARI_SERVER_NAME
-  IMAGE=$IMAGE
+  AMBARI_SERVER_IMAGE=$AMBARI_SERVER_IMAGE
+  AMBARI_AGENT_IMAGE=$AMBARI_AGENT_IMAGE
   DOCKER_OPTS=$DOCKER_OPTS
   AMBARI_SERVER_IP=$AMBARI_SERVER_IP
   CONSUL=$CONSUL
@@ -94,8 +97,9 @@ _amb_run_shell() {
   COMMAND=$1
   : ${COMMAND:? required}
   get-ambari-server-ip
-  NODES=$(docker inspect --format="{{.Config.Image}} {{.Name}}" $(docker ps -q)|grep $IMAGE|grep $NODE_PREFIX|wc -l|xargs)
-  run-command docker run -it --rm -e EXPECTED_HOST_COUNT=$((NODES-1)) -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver --entrypoint /bin/sh $IMAGE -c $COMMAND
+  EXPECTED_HOST_COUNT=$(docker inspect --format="{{.Config.Image}} {{.Name}}" $(docker ps -q)|grep $AMBARI_AGENT_IMAGE|grep $NODE_PREFIX|wc -l|xargs)
+  run-command docker run -it --rm -e EXPECTED_HOST_COUNT=$EXPECTED_HOST_COUNT -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver \
+     --entrypoint /bin/sh $AMBARI_SERVER_IMAGE -c $COMMAND
 }
 
 amb-shell() {
@@ -126,7 +130,8 @@ amb-start-first() {
   run-command docker run -d $dns_port_command --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
   sleep 5
 
-  run-command docker run -d -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $IMAGE /start-server
+  run-command docker run -d $DOCKER_OPTS --privileged --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $AMBARI_SERVER_IMAGE \
+          systemd.setenv=NAMESERVER_ADDR=$(get-consul-ip)
 
   get-ambari-server-ip
 
@@ -169,7 +174,8 @@ amb-start-node() {
     MORE_OPTIONS="$@"
   fi
 
-  run-command docker run $MORE_OPTIONS -e BRIDGE_IP=$(get-consul-ip) $DOCKER_OPTS --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.service.consul $IMAGE /start-agent
+  run-command docker run $MORE_OPTIONS $DOCKER_OPTS --privileged --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.service.consul $AMBARI_AGENT_IMAGE \
+              systemd.setenv=NAMESERVER_ADDR=$(get-consul-ip)
 
   _consul-register-service ${NODE_PREFIX}${NUMBER} $(get-host-ip ${NODE_PREFIX}$NUMBER)
 }

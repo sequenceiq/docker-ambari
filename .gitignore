@@ -6,3 +6,5 @@ jdk-7u45-linux-x64.tar.gz
 .test-profile
 .amb
 .project
+.idea
+*.iml

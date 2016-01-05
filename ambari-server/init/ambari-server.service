@@ -1,0 +1,18 @@
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=Ambari Server Service
+After=network-online.target network.service
+
+[Service]
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+ExecStartPre=/opt/ambari-server/init-server.sh
+ExecStart=/usr/sbin/ambari-server start
+ExecStop=/usr/sbin/ambari-server stop
