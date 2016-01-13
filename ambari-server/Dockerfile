@@ -22,6 +22,21 @@ RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f 
 RUN yum install -y ambari-server ambari-agent
 RUN ambari-server setup --silent --java-home $JAVA_HOME
 
+# https://issues.apache.org/jira/browse/AMBARI-14627
+RUN cp /usr/sbin/ambari-server.py /usr/sbin/ambari-server2.py
+RUN cp usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py usr/lib/python2.6/site-packages/ambari_server/setupSecurity2.py
+RUN sed -i '/^.*choice = get_validated_string_input/ s/.*/  choice = "2"/' /usr/sbin/ambari-server.py
+RUN sed -i -e '/^.*Invalid choice/d' /usr/sbin/ambari-server.py
+RUN sed -i '/^.*masterKey = get_validated_string_input/ s/.*/    masterKey = "bigdata"/' /usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
+RUN sed -i '/^.*masterKey2 = get_validated_string_input/ s/.*/    masterKey2 = "bigdata"/' /usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
+RUN sed -i -e '/^.*passwordPattern, passwordDescr/d' /usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
+RUN sed -i '/^.*persist = / s/.*/    persist = True/' /usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
+RUN sed -i -e '/^.*not to persist/,+4d' /usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
+RUN mv /usr/sbin/ambari-server2.py /usr/sbin/ambari-server.py
+RUN mv usr/lib/python2.6/site-packages/ambari_server/setupSecurity2.py usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
+
+RUN ambari-server setup-security
+
 # increase PermGen Space for Ambari views
 ENV AMBARI_JVM_ARGS -XX:MaxPermSize=512m
 
