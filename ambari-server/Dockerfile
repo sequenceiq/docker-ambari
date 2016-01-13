@@ -32,10 +32,9 @@ RUN sed -i '/^.*masterKey2 = get_validated_string_input/ s/.*/    masterKey2 = "
 RUN sed -i -e '/^.*passwordPattern, passwordDescr/d' /usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
 RUN sed -i '/^.*persist = / s/.*/    persist = True/' /usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
 RUN sed -i -e '/^.*not to persist/,+4d' /usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
+RUN ambari-server setup-security
 RUN mv /usr/sbin/ambari-server2.py /usr/sbin/ambari-server.py
 RUN mv usr/lib/python2.6/site-packages/ambari_server/setupSecurity2.py usr/lib/python2.6/site-packages/ambari_server/setupSecurity.py
-
-RUN ambari-server setup-security
 
 # increase PermGen Space for Ambari views
 ENV AMBARI_JVM_ARGS -XX:MaxPermSize=512m
