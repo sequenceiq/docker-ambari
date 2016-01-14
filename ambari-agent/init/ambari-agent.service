@@ -1,0 +1,18 @@
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=Ambari Agent Service
+After=network-online.target network.service
+
+[Service]
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+ExecStartPre=/opt/ambari-agent/init-agent.sh
+ExecStart=/etc/rc.d/init.d/ambari-agent start
+ExecStop=/etc/rc.d/init.d/ambari-agent stop

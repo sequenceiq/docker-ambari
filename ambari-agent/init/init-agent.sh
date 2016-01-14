@@ -8,9 +8,9 @@ debug() {
   [[ "DEBUG" ]]  && echo "[DEBUG] $@" 1>&2
 }
 
-get_bridge_ip() {
-  if [[ "$BRIDGE_IP" ]]; then
-    echo $BRIDGE_IP
+get_nameserver_addr() {
+  if [[ "$NAMESERVER_ADDR" ]]; then
+    echo $NAMESERVER_ADDR
   else
     if ip addr show docker0 &> /dev/null; then
       ip addr show docker0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1
@@ -20,41 +20,28 @@ get_bridge_ip() {
   fi
 }
 
-# sporadically the yum db is corrupted when using overlayfs as storage backend
-cleanup-rpmdb() {
-  rm -f /var/lib/rpm/__db*
-  rpm --rebuilddb
-}
-
 # --dns isn't available for: docker run --net=host
 # sed -i /etc/resolf.conf fails:
 # sed: cannot rename /etc/sedU9oCRy: Device or resource busy
 # here comes the tempfile workaround ...
-local-nameserver() {
+local_nameserver() {
   cat>/etc/resolv.conf<<EOF
-nameserver $(get_bridge_ip)
+nameserver $(get_nameserver_addr)
 search service.consul node.dc1.consul
 EOF
 }
 
 # GCP overrides the /etc/hosts file with its internal hostname, so we need to change the
 # order of the host resolution to try the DNS first
-reorder-dns-lookup() {
+reorder_dns_lookup() {
   if [ "$CLOUD_PLATFORM" == "GCP" ] || [ "$CLOUD_PLATFORM" == "GCC" ]; then
     sed -i "/^hosts:/ s/ *files dns/ dns files/" /etc/nsswitch.conf
   fi
 }
 
 main() {
-  cleanup-rpmdb
-  local-nameserver
-  reorder-dns-lookup
-  ambari-agent start
-  /etc/init.d/sshd start
-  while true; do
-    sleep 3
-    tail -f /var/log/ambari-agent/ambari-agent.log
-  done
+  local_nameserver
+  reorder_dns_lookup
 }
 
 main "$@"
