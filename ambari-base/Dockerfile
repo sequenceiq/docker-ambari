@@ -49,4 +49,6 @@ RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f 
 
 ENV PS1 "[\u@docker-ambari \W]# "
 
+RUN yum install -y traceroute net-tools
+
 

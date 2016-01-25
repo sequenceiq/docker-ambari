@@ -32,3 +32,5 @@ ADD init/ambari-agent.service /etc/systemd/system/ambari-agent.service
 RUN systemctl enable ambari-agent
 
 RUN echo DefaultEnvironment=\"JAVA_HOME=$JAVA_HOME\" \"HADOOP_CLASSPATH=$HADOOP_CLASSPATH\" >> /etc/systemd/system.conf
+
+RUN yum install -y traceroute net-tools
