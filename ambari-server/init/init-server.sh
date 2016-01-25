@@ -79,7 +79,7 @@ silent_security_setup() {
 }
 
 main() {
-  local_nameserver
+  # local_nameserver
   reorder_dns_lookup
   if [ ! -f "/var/ambari-init-executed" ]; then
     config_remote_jdbc
