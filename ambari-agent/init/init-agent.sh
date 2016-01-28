@@ -1,6 +1,7 @@
 #!/bin/bash
 
 : ${CLOUD_PLATFORM:="none"}
+: ${AMBARI_SERVER_ADDR:="ambari-8080.service.consul"}
 
 [[ "TRACE" ]] && set -x
 
@@ -31,6 +32,10 @@ search service.consul node.dc1.consul
 EOF
 }
 
+ambari_server_addr() {
+  sed -i "s/^hostname=.*/hostname=${AMBARI_SERVER_ADDR}/" /etc/ambari-agent/conf/ambari-agent.ini
+}
+
 # GCP overrides the /etc/hosts file with its internal hostname, so we need to change the
 # order of the host resolution to try the DNS first
 reorder_dns_lookup() {
@@ -41,6 +46,7 @@ reorder_dns_lookup() {
 
 main() {
   local_nameserver
+  ambari_server_addr
   reorder_dns_lookup
 }
 
