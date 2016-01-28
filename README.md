@@ -6,10 +6,25 @@ This projects aim is to help you to get started with Ambari.
 
 Follow the description at the docker getting started page for your appropriate OS: ([Linux](http://docs.docker.com/linux/started/), [Mac](http://docs.docker.com/mac/started/), [Windows](http://docs.docker.com/windows/started/))
 
-**Note:** If you are using `boot2docker` make sure you forward all ports from docker:
-http://docs.docker.io/en/latest/installation/mac/#forwarding-vm-port-range-to-host
+### OSX
+Ambari containers started by ambari-function are using bridge networking. This means that you will not be able to communicate with containers directly
+from host unless you specify the route to containers. You can do this with:
 
-## Starting the container
+```
+# Getting the IP of docker-machine or boot2docker
+docker-machine ip <name-of-docker-vm>
+# or
+boot2docker ip
+
+# Setting up the
+sudo route add -net 172.17.0.0/16 <docker-machine or boot2docker>
+# e.g:
+sudo route add -net 172.17.0.0/16 192.168.99.100
+```
+**Note:**  the above mentioned route command will not survive a reboot and you need to execute again after reboot of your machine.
+
+
+## Starting containers
 
 This will start (and download if you never used it before) an image based on
 Centos 7 with pre-installed Ambari 2.2.0 ready to install HDP 2.3.
