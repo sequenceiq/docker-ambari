@@ -53,7 +53,7 @@ config_remote_jdbc() {
     ambari-server setup --silent --java-home $JAVA_HOME
   else
     echo Configure remote jdbc connection
-    ambari-server setup --silent --java-home $JAVA_HOME --database postgres --databasehost localhost --databaseport 5432 --databasename postgres \
+    ambari-server setup --silent --java-home $JAVA_HOME --database postgres --databasehost $POSTGRES_DB --databaseport 5432 --databasename postgres \
          --postgresschema postgres --databaseusername ambari --databasepassword bigdata
     wait_for_db
     PGPASSWORD=bigdata psql -h $POSTGRES_DB -U ambari postgres < /var/lib/ambari-server/resources/Ambari-DDL-Postgres-CREATE.sql
