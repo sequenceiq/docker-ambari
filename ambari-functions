@@ -19,6 +19,8 @@ USAGE
 : ${DNS_PORT:=53}
 : ${EXPOSE_DNS:=false}
 : ${DRY_RUN:=false}
+: ${LOCAL_REPO_DIR:=""}
+: ${REPO:="${NODE_PREFIX}-repo"}
 
 run-command() {
   CMD="$@"
@@ -32,7 +34,7 @@ run-command() {
 
 amb-clean() {
   unset NODE_PREFIX AMBARI_SERVER_NAME AMBARI_SERVER_IMAGE AMBARI_AGENT_IMAGE DOCKER_OPTS CONSUL CONSUL_IMAGE DEBUG SLEEP_TIME AMBARI_SERVER_IP EXPOSE_DNS \
-        DRY_RUN
+        DRY_RUN LOCAL_REPO_DIR REPO
 }
 
 get-ambari-server-ip() {
@@ -65,6 +67,8 @@ amb-settings() {
   CONSUL_IMAGE=$CONSUL_IMAGE
   EXPOSE_DNS=$EXPOSE_DNS
   DRY_RUN=$DRY_RUN
+  LOCAL_REPO_DIR=$LOCAL_REPO_DIR
+  REPO=$REPO
 EOF
 }
 
@@ -82,12 +86,20 @@ docker-psa() {
   docker inspect --format="{{.Name}} {{.NetworkSettings.IPAddress}} {{.Config.Image}} {{.Config.Entrypoint}} {{.Config.Cmd}}" $(docker ps -qa)
 }
 
+start-local-repo() {
+    if [ -n "$LOCAL_REPO_DIR" ]; then
+        run-command docker run -d --name ${REPO} -h ${REPO}.service.consul -v "$LOCAL_REPO_DIR":/usr/local/apache2/htdocs/ httpd:2.4
+        _consul-register-service ${REPO} $(get-host-ip ${REPO})
+    fi
+}
+
 amb-start-cluster() {
   local act_cluster_size=$1
   : ${act_cluster_size:=$CLUSTER_SIZE}
   echo starting an ambari cluster with: $act_cluster_size nodes
 
   amb-start-first
+  start-local-repo
   [ $act_cluster_size -gt 1 ] && for i in $(seq $((act_cluster_size - 1))); do
     amb-start-node $i
   done
