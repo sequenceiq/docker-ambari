@@ -1,6 +1,7 @@
 #!/bin/bash
 
 : ${CLOUD_PLATFORM:="none"}
+: ${USE_CONSUL_DNS:="true"}
 : ${AMBARI_SERVER_ADDR:="ambari-8080.service.consul"}
 
 [[ "TRACE" ]] && set -x
@@ -45,9 +46,10 @@ reorder_dns_lookup() {
 }
 
 main() {
-  local_nameserver
+  [[ "$USE_CONSUL_DNS" == "true" ]] && local_nameserver
   ambari_server_addr
   reorder_dns_lookup
 }
 
 main "$@"
+
