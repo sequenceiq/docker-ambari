@@ -24,6 +24,7 @@ RUN yum install -y tar git curl bind-utils unzip wget && yum clean all
 
 # Setup sshd
 RUN yum install -y openssh-server openssh-clients && yum clean all
+RUN sed -i "s/#Port 22/Port 2022/" /etc/ssh/sshd_config
 RUN systemctl enable sshd
 
 # kerberos client
