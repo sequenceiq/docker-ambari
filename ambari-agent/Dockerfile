@@ -1,5 +1,5 @@
 # Creates an Ambari Agent base on vanilla centos
-FROM hortonworks/ambari-base:7.2.1511-v1
+FROM hortonworks/ambari-base:7.2.1511-v2
 MAINTAINER Hortonworks
 
 # add ambari repo

@@ -16,15 +16,10 @@ rm -f /lib/systemd/system/anaconda.target.wants/*;
 VOLUME [ "/sys/fs/cgroup" ]
 ENTRYPOINT ["/usr/sbin/init"]
 
-# increase timeouts to avoid "No more mirrors to try" if yum repos are busy for a few minutes
-RUN echo "retries=0" >> /etc/yum.conf
-RUN echo "timeout=60" >> /etc/yum.conf
-
 RUN yum install -y tar git curl bind-utils unzip wget && yum clean all
 
 # Setup sshd
 RUN yum install -y openssh-server openssh-clients && yum clean all
-RUN sed -i "s/#Port 22/Port 2022/" /etc/ssh/sshd_config
 RUN systemctl enable sshd
 
 # kerberos client
@@ -49,5 +44,3 @@ ADD http://public-repo-1.hortonworks.com/ARTIFACTS/UnlimitedJCEPolicyJDK7.zip $J
 RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f UnlimitedJCEPolicyJDK7.zip && mv UnlimitedJCEPolicy/*jar . && rm -rf UnlimitedJCEPolicy
 
 ENV PS1 "[\u@docker-ambari \W]# "
-
-
