@@ -7,7 +7,7 @@ After=network-online.target network.service
 
 [Service]
 Type=forking
-Restart=no
+Restart=on-failure
 TimeoutSec=5min
 IgnoreSIGPIPE=no
 KillMode=process
