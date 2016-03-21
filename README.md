@@ -2,6 +2,8 @@
 
 This projects aim is to help you to get started with Ambari.
 
+> Please note that this project is not officially supported by Hortonworks and may not be suitable for production use. It can be used to experiment with Hadoop on Docker but for a complete and supported solution please check out [Cloudbreak](https://github.com/sequenceiq/cloudbreak).
+
 ## Install Docker
 
 Follow the description at the docker getting started page for your appropriate OS: ([Linux](http://docs.docker.com/linux/started/), [Mac](http://docs.docker.com/mac/started/), [Windows](http://docs.docker.com/windows/started/))
