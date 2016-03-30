@@ -32,6 +32,7 @@ RUN systemctl enable ambari-server
 
 RUN echo DefaultEnvironment=\"JAVA_HOME=$JAVA_HOME\" >> /etc/systemd/system.conf
 
+RUN yum install -y epel-release && yum clean all
 RUN yum install -y salt-minion && yum clean all
 RUN systemctl enable salt-minion
 
