@@ -1,4 +1,4 @@
-FROM hortonworks/ambari-base:7.2-v4
+FROM hortonworks/ambari-base:7.2.1511-v3
 
 MAINTAINER Hortonworks
 
