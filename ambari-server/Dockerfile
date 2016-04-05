@@ -4,7 +4,8 @@ MAINTAINER Hortonworks
 
 RUN yum install -y epel-release && yum clean all
 
-RUN yum install -y yum-utils yum-plugin-ovl
+RUN yum update -y && yum clean all
+RUN yum install -y yum-utils yum-plugin-ovl rpcbind systemd-sysv && yum clean all
 
 # add ambari repo
 ADD ambari.repo /etc/yum.repos.d/
