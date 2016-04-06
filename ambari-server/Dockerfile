@@ -1,11 +1,6 @@
-FROM hortonworks/ambari-base:7.2.1511-v3
+FROM hortonworks/ambari-base:7.2-v5
 
 MAINTAINER Hortonworks
-
-RUN yum install -y epel-release && yum clean all
-
-RUN yum update -y && yum clean all
-RUN yum install -y yum-utils yum-plugin-ovl rpcbind systemd-sysv && yum clean all
 
 # add ambari repo
 ADD ambari.repo /etc/yum.repos.d/
