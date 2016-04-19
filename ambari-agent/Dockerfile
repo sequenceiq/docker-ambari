@@ -24,6 +24,15 @@ RUN sed -i "s/\"ifconfig\"/\"ifconfig eth0\"/" /usr/lib/python2.6/site-packages/
 ADD dash-azure-storage-2.2.0.jar /usr/lib/hadoop/lib/
 ADD gcs-connector-latest-hadoop2.jar /usr/lib/hadoop/lib/
 
+# Add jars for s3mper
+ENV HADOOP_OPTS "-javaagent:/usr/lib/hadoop/lib/aspectjweaver-1.7.3.jar"
+
+ADD s3mper/aspectjrt-1.7.3.jar /usr/lib/hadoop/lib/
+ADD s3mper/aspectjweaver-1.7.3.jar /usr/lib/hadoop/lib/
+ADD s3mper/s3mper-1.0.0.jar /usr/lib/hadoop/lib/
+
+ADD s3mper/s3mper-1.0.0.tar.gz /opt/
+
 ADD init/init-agent.sh /opt/ambari-agent/init-agent.sh
 RUN chmod u+x /opt/ambari-agent/init-agent.sh
 
@@ -31,4 +40,5 @@ ADD init/ambari-agent.service /etc/systemd/system/ambari-agent.service
 
 RUN systemctl enable ambari-agent
 
-RUN echo DefaultEnvironment=\"JAVA_HOME=$JAVA_HOME\" \"HADOOP_CLASSPATH=$HADOOP_CLASSPATH\" >> /etc/systemd/system.conf
+RUN echo DefaultEnvironment=\"JAVA_HOME=$JAVA_HOME\" \"HADOOP_CLASSPATH=$HADOOP_CLASSPATH\" \
+    \"HADOOP_OPTS=$HADOOP_OPTS\" >> /etc/systemd/system.conf
