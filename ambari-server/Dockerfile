@@ -20,9 +20,6 @@ WORKDIR /tmp
 ADD init/init-server.sh /opt/ambari-server/init-server.sh
 RUN chmod u+x /opt/ambari-server/init-server.sh
 
-# install Zeppelin
-RUN cd /var/lib/ambari-server/resources/stacks/HDP/2.2/services && git clone https://github.com/sequenceiq/zeppelin-stack.git
-
 # add mysql and psql connectors to ambari-server so it can be downloaded by services (e.g.: Ranger)
 ADD mysql-connector-java-5.1.17.jar /var/lib/ambari-server/resources/mysql-jdbc-driver.jar
 ADD postgresql-8.4-703.jdbc4.jar /var/lib/ambari-server/resources/postgres-jdbc-driver.jar
