@@ -46,4 +46,6 @@ ENV PATH $PATH:$JAVA_HOME/bin
 ADD http://public-repo-1.hortonworks.com/ARTIFACTS/UnlimitedJCEPolicyJDK7.zip $JAVA_HOME/jre/lib/security/
 RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f UnlimitedJCEPolicyJDK7.zip && mv UnlimitedJCEPolicy/*jar . && rm -rf UnlimitedJCEPolicy
 
+ADD etc/yum.conf /etc/yum.conf 
+
 ENV PS1 "[\u@docker-ambari \W]# "
