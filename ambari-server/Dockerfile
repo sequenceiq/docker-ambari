@@ -1,4 +1,4 @@
-FROM hortonworks/ambari-base:7.2-v6
+FROM hortonworks/ambari-base:7.2-v7
 MAINTAINER Hortonworks
 
 # add ambari repo
