@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ambari-server
+  namespace: ambari
+  labels:
+    name: ambari-server
+
+
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 8080
+      name: web
+      targetPort: 8080
+      protocol: TCP
+    - port: 8440
+      name: api
+      targetPort: 8440
+      protocol: TCP
+    - port: 8441
+      name: api2
+      targetPort: 8441
+      protocol: TCP
+  selector:
+    name: ambari-server

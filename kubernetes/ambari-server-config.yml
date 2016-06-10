@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ambari-server
+  namespace: ambari
+data:
+  10-noconusul.conf: |
+    [Service]
+    Environment="USE_CONSUL_DNS=false"
+  10-hostname.conf: |
+    [Service]
+    ExecStartPre=/bin/bash /scripts/write-custom-hostname.sh
+
