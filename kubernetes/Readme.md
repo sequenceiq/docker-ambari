@@ -8,7 +8,7 @@ teoretically Possible.
 
 run:
 ```
-  kubectl creat -f kubernetes/ in the root folder of this Project
+  kubectl create -f kubernetes/ in the root folder of this Project
 ```
 
 this brings up a cluster with 1 ambari server and 5 ambari agent nodes.
@@ -63,3 +63,13 @@ the internet.
 
 * provide something similar to docker functions in ambari-functions for kubernetes
 * find a solution for exposing the different web interfaces exposed by services in the cluster.
+* This is a poc that shows that it is possible to run ambari on kubernetes.
+Still the question is if it makes sense. To have an on demand hadoop infrastructure
+it is probably ok. To run this as a long living cluster it would be probably necessary
+to dedicated nodes in the cluster for the different services. For example containers
+that only do map reduce and kind of "know" there purpose. These could maby use
+the ambari rest api to register them selves into the cluster, and also deregister
+if they are stopped.
+This way you could use kubernetes autoscaling groups for these containers and it
+would be easyser to use kubernetes services to discover hadoop services. But I don't
+know if the rest api / ambari shell is powerful enoug to do this.
