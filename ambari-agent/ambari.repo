@@ -1,9 +1,9 @@
-#VERSION_NUMBER=2.2.2.0-460
+#VERSION_NUMBER=2.4.0.0-696
 
-[Updates-ambari-2.2.2.0]
-name=ambari-2.2.2.0 - Updates
-baseurl=http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.2.2.0
+[AMBARI.2.4.0.0-696]
+name=Ambari 2.4.0.0-696
+baseurl=http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos7/2.x/BUILDS/2.4.0.0-696/
 gpgcheck=1
-gpgkey=http://public-repo-1.hortonworks.com/ambari/centos7/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+gpgkey=http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos7/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
 enabled=1
 priority=1
