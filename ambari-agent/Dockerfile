@@ -5,7 +5,7 @@ MAINTAINER Hortonworks
 ADD ambari.repo /etc/yum.repos.d/
 
 RUN yum install -y  ambari-agent && yum clean all
-RUN find /etc/rc.d/rc* -name "*ambari-agent" | xargs rm -v
+#RUN find /etc/rc.d/rc* -name "*ambari-agent" | xargs rm -v
 
 # add a custom folder to the hadoop classpath
 RUN mkdir -p /usr/lib/hadoop/lib
