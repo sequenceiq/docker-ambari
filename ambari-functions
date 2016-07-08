@@ -11,6 +11,7 @@ USAGE
 : ${AMBARI_SERVER_IMAGE:="hortonworks/ambari-server:latest"}
 : ${AMBARI_AGENT_IMAGE:="hortonworks/ambari-agent:latest"}
 : ${DOCKER_OPTS:=""}
+: ${AMBARI_SERVER_DOCKER_OPTS:=""}
 : ${CONSUL:="${NODE_PREFIX}-consul"}
 : ${CONSUL_IMAGE:="sequenceiq/consul:v0.5.0-v6"}
 : ${CLUSTER_SIZE:=3}
@@ -31,7 +32,7 @@ run-command() {
 }
 
 amb-clean() {
-  unset NODE_PREFIX AMBARI_SERVER_NAME AMBARI_SERVER_IMAGE AMBARI_AGENT_IMAGE DOCKER_OPTS CONSUL CONSUL_IMAGE DEBUG SLEEP_TIME AMBARI_SERVER_IP EXPOSE_DNS \
+  unset NODE_PREFIX AMBARI_SERVER_NAME AMBARI_SERVER_IMAGE AMBARI_AGENT_IMAGE DOCKER_OPTS AMBARI_SERVER_DOCKER_OPTS CONSUL CONSUL_IMAGE DEBUG SLEEP_TIME AMBARI_SERVER_IP EXPOSE_DNS \
         DRY_RUN
 }
 
@@ -60,6 +61,7 @@ amb-settings() {
   AMBARI_SERVER_IMAGE=$AMBARI_SERVER_IMAGE
   AMBARI_AGENT_IMAGE=$AMBARI_AGENT_IMAGE
   DOCKER_OPTS=$DOCKER_OPTS
+  AMBARI_SERVER_DOCKER_OPTS=$AMBARI_SERVER_DOCKER_OPTS
   AMBARI_SERVER_IP=$AMBARI_SERVER_IP
   CONSUL=$CONSUL
   CONSUL_IMAGE=$CONSUL_IMAGE
@@ -130,7 +132,7 @@ amb-start-first() {
   run-command docker run -d $dns_port_command --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
   sleep 5
 
-  run-command docker run -d $DOCKER_OPTS --privileged --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $AMBARI_SERVER_IMAGE \
+  run-command docker run -d $AMBARI_SERVER_DOCKER_OPTS $DOCKER_OPTS --privileged --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $AMBARI_SERVER_IMAGE \
           systemd.setenv=NAMESERVER_ADDR=$(get-consul-ip)
 
   get-ambari-server-ip
