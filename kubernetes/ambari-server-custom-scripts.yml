@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ambari-server-scripts
+  namespace: ambari
+data:
+  write-custom-hostname.sh: |
+      #!/bin/bash
+      echo -e "#/bin/bash\necho \$( ip addr show | grep \"inet 10\" | awk '{ print \$2}' | tr . - | sed -e s#/24##).ambari.pod.cluster.local" > /etc/ambari-server/conf/internal-hostname.sh
+      chmod +x /etc/ambari-server/conf/internal-hostname.sh
+      cat /etc/hosts | sed -e "s/$HOSTNAME/$(/etc/ambari-server/conf/internal-hostname.sh)/" > /etc/hosts
+      echo "$(/etc/ambari-server/conf/internal-hostname.sh)" > /etc/hostname
+      hostname $(/etc/ambari-server/conf/internal-hostname.sh)

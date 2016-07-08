@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: amb-agent
+  namespace: ambari
+  labels:
+    name: amb-agent
+spec:
+  replicas: 5
+  selector:
+    name: amb-agent
+  template:
+    metadata:
+      labels:
+        name: amb-agent
+    spec:
+      containers:
+      - name: amb-agent
+        image: hortonworks/ambari-agent:2.2.1-v20
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "16G"
+            cpu: "2000m"
+          limits:
+            memory: "20G"
+            cpu: "3000m"
+        volumeMounts:
+            - name: ambari-conf
+              mountPath: /etc/systemd/system/ambari-agent.service.d
+            - name: ambari-scripts
+              mountPath: /scripts
+        env: 
+          - name: AMBARI_SERVER
+            value: ambari-server.ambari.svc.cluster.local
+      volumes:
+          - name: ambari-conf
+            configMap: 
+                name: ambari-agent
+          - name: ambari-scripts
+            configMap: 
+                name: ambari-agent-scripts
+

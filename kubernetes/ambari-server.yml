@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: ambari-server
+  namespace: ambari
+  labels:
+    name: ambari-server
+spec:
+  replicas: 1
+  selector:
+    name: ambari-server
+  template:
+    metadata:
+      labels:
+        name: ambari-server
+    spec:
+      containers:
+      - name: ambari-server
+        securityContext:
+          privileged: true
+        image: hortonworks/ambari-server:2.2.1-v20
+        volumeMounts:
+            - name: ambari-conf
+              mountPath: /etc/systemd/system/ambari-server.service.d
+            - name: ambari-scripts
+              mountPath: /scripts
+        env: 
+          - name: USE_CONSUL_DNS
+            value: "false"
+          - name: AMBARI_SERVER
+            value: ambari-server.ambari.svc.cluster.local
+          - name: AMBARI_HOST
+            value: ambari-server.ambari.svc.cluster.local
+
+        ports:
+        - containerPort: 8080
+      volumes:
+          - name: ambari-conf
+            configMap: 
+                name: ambari-server
+          - name: ambari-scripts
+            configMap: 
+                name: ambari-server-scripts
+
+
