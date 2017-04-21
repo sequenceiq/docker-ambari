@@ -43,13 +43,17 @@ get-consul-ip() {
   get-host-ip $CONSUL
 }
 
+get-consul-base-url() {
+  echo "http://127.0.0.1:8500"
+}
+
 get-host-ip() {
   HOST=$1
   docker inspect --format="{{.NetworkSettings.IPAddress}}" ${HOST}
 }
 
 amb-members() {
-  curl http://$(get-consul-ip):8500/v1/catalog/nodes | sed -e 's/,{"Node":"ambari-8080.*}//g' -e 's/,{"Node":"consul.*}//g'
+  curl $(get-consul-base-url)/v1/catalog/nodes | sed -e 's/,{"Node":"ambari-8080.*}//g' -e 's/,{"Node":"consul.*}//g'
 }
 
 amb-settings() {
@@ -127,10 +131,10 @@ amb-start-first() {
   if [[ "$EXPOSE_DNS" == "true" ]]; then
      dns_port_command="-p 53:$DNS_PORT/udp"
   fi
-  run-command docker run -d $dns_port_command --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
+  run-command docker run -p 8500:8500 -d $dns_port_command --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
   sleep 5
 
-  run-command docker run -d $DOCKER_OPTS --privileged --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $AMBARI_SERVER_IMAGE \
+  run-command docker run -p 8080:8080 -d $DOCKER_OPTS --privileged --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $AMBARI_SERVER_IMAGE \
           systemd.setenv=NAMESERVER_ADDR=$(get-consul-ip)
 
   get-ambari-server-ip
@@ -187,5 +191,5 @@ _consul-register-service() {
     \"Service\": {
       \"Service\": \"$1\"
     }
-  }" http://$(get-consul-ip):8500/v1/catalog/register
+  }" $(get-consul-base-url)/v1/catalog/register
 }
