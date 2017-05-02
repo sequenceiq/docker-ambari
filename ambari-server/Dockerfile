@@ -16,9 +16,6 @@ ADD shell/ambari-shell.sh /tmp/
 ENV PLUGIN_PATH /plugins
 WORKDIR /tmp
 
-ADD init/init-server.sh /opt/ambari-server/init-server.sh
-RUN chmod u+x /opt/ambari-server/init-server.sh
-
 # add mysql and psql connectors to ambari-server so it can be downloaded by services (e.g.: Ranger)
 ADD http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.39.tar.gz /var/lib/ambari-server/resources/mysql-jdbc-driver.jar
 ADD https://jdbc.postgresql.org/download/postgresql-9.4.1208.jre7.jar /var/lib/ambari-server/resources/postgres-jdbc-driver.jar

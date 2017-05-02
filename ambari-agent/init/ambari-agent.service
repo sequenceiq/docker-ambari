@@ -13,6 +13,6 @@ IgnoreSIGPIPE=no
 KillMode=process
 GuessMainPID=no
 RemainAfterExit=yes
-ExecStartPre=/opt/ambari-agent/init-agent.sh
+ExecStartPre=/docker_shared/init-agent.sh
 ExecStart=/etc/rc.d/init.d/ambari-agent start
 ExecStop=/etc/rc.d/init.d/ambari-agent stop
