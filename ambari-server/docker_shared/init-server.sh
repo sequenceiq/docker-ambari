@@ -9,29 +9,6 @@ debug() {
   [[ "DEBUG" ]]  && echo "[DEBUG] $@" 1>&2
 }
 
-get_nameserver_addr() {
-  if [[ "$NAMESERVER_ADDR" ]]; then
-    echo $NAMESERVER_ADDR
-  else
-    if ip addr show docker0 &> /dev/null; then
-      ip addr show docker0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1
-    else
-      ip ro | grep default | cut -d" " -f 3
-    fi
-  fi
-}
-
-# --dns isn't available for: docker run --net=host
-# sed -i /etc/resolf.conf fails:
-# sed: cannot rename /etc/sedU9oCRy: Device or resource busy
-# here comes the tempfile workaround ...
-local_nameserver() {
-  cat>/etc/resolv.conf<<EOF
-nameserver $(get_nameserver_addr)
-search service.consul node.dc1.consul
-EOF
-}
-
 wait_for_db() {
   while : ; do
     PGPASSWORD=bigdata psql -h $POSTGRES_DB -U ambari -c "select 1"
@@ -80,6 +57,9 @@ silent_security_setup() {
 }
 
 main() {
+  ln -s /docker_shared/etc/resolv.conf /tmp/resolv.conf
+  cp /tmp/resolv.conf /etc/resolv.conf
+
   [[ "$USE_CONSUL_DNS" == "true" ]] && local_nameserver
   reorder_dns_lookup
   if [ ! -f "/var/ambari-init-executed" ]; then

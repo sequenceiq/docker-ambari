@@ -5,7 +5,6 @@ MAINTAINER Hortonworks
 ADD ambari.repo /etc/yum.repos.d/
 
 RUN yum install -y  ambari-agent && yum clean all
-#RUN find /etc/rc.d/rc* -name "*ambari-agent" | xargs rm -v
 
 # add a custom folder to the hadoop classpath
 RUN mkdir -p /usr/lib/hadoop/lib
@@ -22,9 +21,6 @@ RUN sed -i "s/\"ifconfig\"/\"ifconfig eth0\"/" /usr/lib/python2.6/site-packages/
 # Add jars from packer image
 ADD dash-azure-storage-2.2.0.jar /usr/lib/hadoop/lib/
 ADD gcs-connector-latest-hadoop2.jar /usr/lib/hadoop/lib/
-
-ADD init/init-agent.sh /opt/ambari-agent/init-agent.sh
-RUN chmod u+x /opt/ambari-agent/init-agent.sh
 
 ADD init/ambari-agent.service /etc/systemd/system/ambari-agent.service
 

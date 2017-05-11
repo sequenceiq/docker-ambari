@@ -14,6 +14,6 @@ KillMode=process
 GuessMainPID=no
 RemainAfterExit=yes
 Environment='AMBARI_JVM_ARGS=-XX:MaxPermSize=512m'
-ExecStartPre=/opt/ambari-server/init-server.sh
+ExecStartPre=/docker_shared/init-server.sh
 ExecStart=/usr/sbin/ambari-server start
 ExecStop=/usr/sbin/ambari-server stop

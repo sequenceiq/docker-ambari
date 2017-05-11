@@ -6,10 +6,16 @@ curl -Lo .amb j.mp/docker-ambari && . .amb
 full documentation: https://github.com/sequenceiq/docker-ambari
 USAGE
 
+: ${WORK_DIR:="/tmp/work_dir/"}
+: ${AMBARI_SERVER_SHARED:="${WORK_DIR}/ambari_server_shared"}
+: ${AMBARI_AGENT_SHARED:="${WORK_DIR}/ambari_agent_shared"}
+: ${KERBEROS:="kerberos"}
+: ${KERBEROS_SHARED:="${WORK_DIR}/kerberos_shared"}
 : ${NODE_PREFIX=amb}
 : ${AMBARI_SERVER_NAME:=${NODE_PREFIX}-server}
 : ${AMBARI_SERVER_IMAGE:="hortonworks/ambari-server:latest"}
 : ${AMBARI_AGENT_IMAGE:="hortonworks/ambari-agent:latest"}
+: ${KERBEROS_IMAGE:="sequenceiq/kerberos:latest"}
 : ${DOCKER_OPTS:=""}
 : ${CONSUL:="${NODE_PREFIX}-consul"}
 : ${CONSUL_IMAGE:="sequenceiq/consul:v0.5.0-v6"}
@@ -19,6 +25,31 @@ USAGE
 : ${DNS_PORT:=53}
 : ${EXPOSE_DNS:=false}
 : ${DRY_RUN:=false}
+
+
+init() {
+  mkdir -p $WORK_DIR
+  mkdir -p $AMBARI_SERVER_SHARED
+
+  rm -rf {ambari-server,ambari-agent,docker-kerberos}/docker_shared/ 
+  cp -r docker_shared/etc {ambari-server,ambari-agent,docker-kerberos}/docker_shared/ 
+
+  cp -rf ambari-server/docker_shared/ $AMBARI_SERVER_SHARED
+  cp -rf ambari-agent/docker_shared/ $AMBARI_AGENT_SHARED
+  cp -rf docker-kerberos/docker_shared/ $KERBEROS_SHARED
+}
+
+update-nameserver() {
+  cat>$WORK_DIR/ambari_server_shared/etc/resolv.conf<<EOF
+nameserver $(get-consul-ip)
+search service.consul node.dc1.consul
+EOF
+
+  cat>$WORK_DIR/ambari_agent_shared/etc/resolv.conf<<EOF
+nameserver $(get-consul-ip)
+search service.consul node.dc1.consul
+EOF
+}
 
 run-command() {
   CMD="$@"
@@ -43,13 +74,17 @@ get-consul-ip() {
   get-host-ip $CONSUL
 }
 
+get-consul-base-url() {
+  echo "http://127.0.0.1:8500"
+}
+
 get-host-ip() {
   HOST=$1
   docker inspect --format="{{.NetworkSettings.IPAddress}}" ${HOST}
 }
 
 amb-members() {
-  curl http://$(get-consul-ip):8500/v1/catalog/nodes | sed -e 's/,{"Node":"ambari-8080.*}//g' -e 's/,{"Node":"consul.*}//g'
+  curl $(get-consul-base-url)/v1/catalog/nodes | sed -e 's/,{"Node":"ambari-8080.*}//g' -e 's/,{"Node":"consul.*}//g'
 }
 
 amb-settings() {
@@ -82,6 +117,30 @@ docker-psa() {
   docker inspect --format="{{.Name}} {{.NetworkSettings.IPAddress}} {{.Config.Image}} {{.Config.Entrypoint}} {{.Config.Cmd}}" $(docker ps -qa)
 }
 
+amb-restart-cluster() {
+  update-nameserver
+  local act_cluster_size=$1
+  : ${act_cluster_size:=$CLUSTER_SIZE}
+  echo starting an ambari cluster with: $act_cluster_size nodes
+
+  local CONSUL_IP=$(get-consul-ip)
+
+  docker restart ${AMBARI_SERVER_NAME}
+
+  [ $act_cluster_size -gt 1 ] && for i in $(seq $((act_cluster_size - 1))); do
+    docker restart ${NODE_PREFIX}${i}
+  done
+
+  echo "Waiting for containers to start..."
+  sleep 5
+
+  docker exec ${AMBARI_SERVER_NAME} /bin/bash -c "ex '+%s/nameserver.*/nameserver $CONSUL_IP/g' '+:wq' /etc/resolv.conf"
+
+  [ $act_cluster_size -gt 1 ] && for i in $(seq $((act_cluster_size - 1))); do
+    docker exec ${NODE_PREFIX}${i} /bin/bash -c "ex '+%s/nameserver.*/nameserver $CONSUL_IP/g' '+:wq' /etc/resolv.conf"
+  done
+}
+
 amb-start-cluster() {
   local act_cluster_size=$1
   : ${act_cluster_size:=$CLUSTER_SIZE}
@@ -98,8 +157,9 @@ _amb_run_shell() {
   : ${COMMAND:? required}
   get-ambari-server-ip
   EXPECTED_HOST_COUNT=$(docker inspect --format="{{.Config.Image}} {{.Name}}" $(docker ps -q)|grep $AMBARI_AGENT_IMAGE|grep $NODE_PREFIX|wc -l|xargs)
-  run-command docker run -it --rm -e EXPECTED_HOST_COUNT=$EXPECTED_HOST_COUNT -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver \
-     --entrypoint /bin/sh $AMBARI_SERVER_IMAGE -c $COMMAND
+  cd ambari-server/ && run-command docker run -v $AMBARI_SERVER_SHARED:/docker_shared -it --rm -e EXPECTED_HOST_COUNT=$EXPECTED_HOST_COUNT -e BLUEPRINT=$BLUEPRINT --link ${AMBARI_SERVER_NAME}:ambariserver \
+     --entrypoint /bin/sh $AMBARI_SERVER_IMAGE -c $COMMAND && cd ..
+
 }
 
 amb-shell() {
@@ -118,8 +178,46 @@ amb-deploy-cluster() {
 
   : ${BLUEPRINT:?" required (single-node-hdfs-yarn / multi-node-hdfs-yarn / hdp-singlenode-default / hdp-multinode-default)"}
 
+  init 
   amb-start-cluster $act_cluster_size
   _amb_run_shell /tmp/install-cluster.sh
+}
+
+amb-consul-start() {
+  local dns_port_command=""
+  if [[ "$EXPOSE_DNS" == "true" ]]; then
+     dns_port_command="-p 53:$DNS_PORT/udp"
+  fi
+  run-command docker run -p 8500:8500 -d $dns_port_command --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap-expect=1
+  sleep 5
+
+  update-nameserver
+}
+
+
+amb-reregister-service() {
+  get-ambari-server-ip
+  : ${AMBARI_SERVER_IP:?"AMBARI_SERVER_IP is needed"}
+  NUMBER=${1:?"please enter number of nodes to be re-registered"}
+  if [[ $# -eq 1 ]]; then
+    MORE_OPTIONS="-d"
+  else
+    shift
+    MORE_OPTIONS="$@"
+  fi
+
+  echo reregistering an ambari cluster on consul with: $act_cluster_size nodes
+
+  echo "Registering Ambari Server $AMBARI_SERVER_NAME $AMBARI_SERVER_IP on consul: " $(_consul-register-service $AMBARI_SERVER_NAME $AMBARI_SERVER_IP)
+
+  echo "Registering Ambari Service ambari-8080 on consul: " $(_consul-register-service ambari-8080 $AMBARI_SERVER_IP)
+
+  local act_cluster_size=$1
+  : ${act_cluster_size:=$CLUSTER_SIZE}
+
+  [ $act_cluster_size -gt 1 ] && for i in $(seq $((act_cluster_size - 1))); do
+    echo Registering ${NODE_PREFIX}${i} : $(_consul-register-service ${NODE_PREFIX}${i} $(get-host-ip ${NODE_PREFIX}${i}))
+  done
 }
 
 amb-start-first() {
@@ -127,16 +225,24 @@ amb-start-first() {
   if [[ "$EXPOSE_DNS" == "true" ]]; then
      dns_port_command="-p 53:$DNS_PORT/udp"
   fi
-  run-command docker run -d $dns_port_command --name $CONSUL -h $CONSUL.service.consul $CONSUL_IMAGE -server -bootstrap
-  sleep 5
 
-  run-command docker run -d $DOCKER_OPTS --privileged --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $AMBARI_SERVER_IMAGE \
-          systemd.setenv=NAMESERVER_ADDR=$(get-consul-ip)
+  amb-consul-start
+
+  cd ambari-server && run-command docker run -v $AMBARI_SERVER_SHARED:/docker_shared -p 8080:8080 -d $DOCKER_OPTS --privileged --name $AMBARI_SERVER_NAME -h $AMBARI_SERVER_NAME.service.consul $AMBARI_SERVER_IMAGE && cd ..
 
   get-ambari-server-ip
 
   _consul-register-service $AMBARI_SERVER_NAME $AMBARI_SERVER_IP
   _consul-register-service ambari-8080 $AMBARI_SERVER_IP
+}
+
+kerberos-start-first() {
+  echo run-command docker run -v $KERBEROS_SHARED:/docker_shared -v /dev/urandom:/dev/random -h kerberos.service.consul --name $KERBEROS -e BOOTSTRAP=0 --security-opt seccomp=unconfined -dt $DOCKER_OPTS --entrypoint /docker_shared/init-kerberos.sh $KERBEROS_IMAGE 
+  run-command docker run -v $KERBEROS_SHARED:/docker_shared -v /dev/urandom:/dev/random -h kerberos.service.consul --name $KERBEROS -e BOOTSTRAP=0 --security-opt seccomp=unconfined -dt $DOCKER_OPTS --entrypoint /docker_shared/init-kerberos.sh $KERBEROS_IMAGE 
+  sleep 10
+  kerberos_ip=$(get-host-ip $KERBEROS)
+  echo "Kerberos running on" $kerberos_ip
+  _consul-register-service $KERBEROS $kerberos_ip 
 }
 
 amb-copy-to-hdfs() {
@@ -174,18 +280,18 @@ amb-start-node() {
     MORE_OPTIONS="$@"
   fi
 
-  run-command docker run $MORE_OPTIONS $DOCKER_OPTS --privileged --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.service.consul $AMBARI_AGENT_IMAGE \
-              systemd.setenv=NAMESERVER_ADDR=$(get-consul-ip)
+  cd ambari-agent && run-command docker run -v $AMBARI_AGENT_SHARED:/docker_shared $MORE_OPTIONS $DOCKER_OPTS --privileged --name ${NODE_PREFIX}$NUMBER -h ${NODE_PREFIX}${NUMBER}.service.consul $AMBARI_AGENT_IMAGE && cd ..
 
   _consul-register-service ${NODE_PREFIX}${NUMBER} $(get-host-ip ${NODE_PREFIX}$NUMBER)
 }
 
 _consul-register-service() {
-  curl -X PUT -d "{
-    \"Node\": \"$1\",
-    \"Address\": \"$2\",
-    \"Service\": {
-      \"Service\": \"$1\"
-    }
-  }" http://$(get-consul-ip):8500/v1/catalog/register
+  echo "Dummy Registration"
+  # curl -X PUT -d "{
+  #  \"Node\": \"$1\",
+  #  \"Address\": \"$2\",
+  #  \"Service\": {
+  #    \"Service\": \"$1\"
+  #  }
+  #}" $(get-consul-base-url)/v1/catalog/register
 }
