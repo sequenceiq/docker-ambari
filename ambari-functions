@@ -9,10 +9,13 @@ USAGE
 : ${WORK_DIR:="/tmp/work_dir/"}
 : ${AMBARI_SERVER_SHARED:="${WORK_DIR}/ambari_server_shared"}
 : ${AMBARI_AGENT_SHARED:="${WORK_DIR}/ambari_agent_shared"}
+: ${KERBEROS:="kerberos"}
+: ${KERBEROS_SHARED:="${WORK_DIR}/kerberos_shared"}
 : ${NODE_PREFIX=amb}
 : ${AMBARI_SERVER_NAME:=${NODE_PREFIX}-server}
 : ${AMBARI_SERVER_IMAGE:="hortonworks/ambari-server:latest"}
 : ${AMBARI_AGENT_IMAGE:="hortonworks/ambari-agent:latest"}
+: ${KERBEROS_IMAGE:="sequenceiq/kerberos:latest"}
 : ${DOCKER_OPTS:=""}
 : ${CONSUL:="${NODE_PREFIX}-consul"}
 : ${CONSUL_IMAGE:="sequenceiq/consul:v0.5.0-v6"}
@@ -27,8 +30,13 @@ USAGE
 init() {
   mkdir -p $WORK_DIR
   mkdir -p $AMBARI_SERVER_SHARED
+
+  rm -rf {ambari-server,ambari-agent,docker-kerberos}/docker_shared/ 
+  cp -r docker_shared/etc {ambari-server,ambari-agent,docker-kerberos}/docker_shared/ 
+
   cp -rf ambari-server/docker_shared/ $AMBARI_SERVER_SHARED
   cp -rf ambari-agent/docker_shared/ $AMBARI_AGENT_SHARED
+  cp -rf docker-kerberos/docker_shared/ $KERBEROS_SHARED
 }
 
 update-nameserver() {
@@ -228,6 +236,15 @@ amb-start-first() {
   _consul-register-service ambari-8080 $AMBARI_SERVER_IP
 }
 
+kerberos-start-first() {
+  echo run-command docker run -v $KERBEROS_SHARED:/docker_shared -v /dev/urandom:/dev/random -h kerberos.service.consul --name $KERBEROS -e BOOTSTRAP=0 --security-opt seccomp=unconfined -dt $DOCKER_OPTS --entrypoint /docker_shared/init-kerberos.sh $KERBEROS_IMAGE 
+  run-command docker run -v $KERBEROS_SHARED:/docker_shared -v /dev/urandom:/dev/random -h kerberos.service.consul --name $KERBEROS -e BOOTSTRAP=0 --security-opt seccomp=unconfined -dt $DOCKER_OPTS --entrypoint /docker_shared/init-kerberos.sh $KERBEROS_IMAGE 
+  sleep 10
+  kerberos_ip=$(get-host-ip $KERBEROS)
+  echo "Kerberos running on" $kerberos_ip
+  _consul-register-service $KERBEROS $kerberos_ip 
+}
+
 amb-copy-to-hdfs() {
   get-ambari-server-ip
   FILE_PATH=${1:?"usage: <FILE_PATH> <NEW_FILE_NAME_ON_HDFS> <HDFS_PATH>"}
@@ -269,11 +286,12 @@ amb-start-node() {
 }
 
 _consul-register-service() {
-  curl -X PUT -d "{
-    \"Node\": \"$1\",
-    \"Address\": \"$2\",
-    \"Service\": {
-      \"Service\": \"$1\"
-    }
-  }" $(get-consul-base-url)/v1/catalog/register
+  echo "Dummy Registration"
+  # curl -X PUT -d "{
+  #  \"Node\": \"$1\",
+  #  \"Address\": \"$2\",
+  #  \"Service\": {
+  #    \"Service\": \"$1\"
+  #  }
+  #}" $(get-consul-base-url)/v1/catalog/register
 }
