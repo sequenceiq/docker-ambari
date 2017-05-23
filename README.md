@@ -80,7 +80,7 @@ Ambari shell will show the progress in the upper right corner.
 
 ## Multi-node Hadoop cluster
 
-For the multi node Hadoop cluster instructions please take a look at [Cloudbreak](http://hortonworks.com/hadoop/cloudbreak/).
+For the multi node Hadoop cluster instructions please take a look at [Cloudbreak](http://sequenceiq.com/cloudbreak-docs).
 
 If you don't want to check out the project from github, then just dowload the ambari-fuctions script, source it and deploy a
 an Ambari cluster:
