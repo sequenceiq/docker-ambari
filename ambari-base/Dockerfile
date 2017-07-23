@@ -36,18 +36,18 @@ RUN yum install -y which && yum clean all
 
 RUN curl -o /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq && chmod +x /usr/bin/jq
 
-ENV JDK_ARTIFACT jdk-7u67-linux-x64.tar.gz
-ENV JDK_VERSION jdk1.7.0_67
+ENV JDK_ARTIFACT jdk-8u112-linux-x64.tar.gz
+ENV JDK_VERSION jdk1.8.0_112
 
-# install Ambari specified 1.7 jdk
+# install Ambari specified 1.8 jdk
 RUN mkdir /usr/jdk64 && cd /usr/jdk64 && wget http://public-repo-1.hortonworks.com/ARTIFACTS/$JDK_ARTIFACT && \
     tar -xf $JDK_ARTIFACT && rm -f $JDK_ARTIFACT
 ENV JAVA_HOME /usr/jdk64/$JDK_VERSION
 ENV PATH $PATH:$JAVA_HOME/bin
 
 # jce
-ADD http://public-repo-1.hortonworks.com/ARTIFACTS/UnlimitedJCEPolicyJDK7.zip $JAVA_HOME/jre/lib/security/
-RUN cd $JAVA_HOME/jre/lib/security && unzip UnlimitedJCEPolicyJDK7.zip && rm -f UnlimitedJCEPolicyJDK7.zip && mv UnlimitedJCEPolicy/*jar . && rm -rf UnlimitedJCEPolicy
+ADD http://public-repo-1.hortonworks.com/ARTIFACTS/jce_policy-8.zip $JAVA_HOME/jre/lib/security/
+RUN cd $JAVA_HOME/jre/lib/security && unzip jce_policy-8.zip && rm -f jce_policy-8.zip && mv UnlimitedJCEPolicyJDK8/*jar . && rm -rf UnlimitedJCEPolicyJDK8
 
 ADD etc/yum.conf /etc/yum.conf 
 
