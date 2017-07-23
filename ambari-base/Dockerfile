@@ -31,6 +31,9 @@ RUN yum install -y krb5-workstation && yum clean all
 # initscripts (service wrapper for servicectl) is need othewise the Ambari is unable to start postgresql
 RUN yum install -y initscripts && yum clean all
 
+# needed scripts for ambari stack
+RUN yum install -y which && yum clean all
+
 RUN curl -o /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq && chmod +x /usr/bin/jq
 
 ENV JDK_ARTIFACT jdk-7u67-linux-x64.tar.gz
